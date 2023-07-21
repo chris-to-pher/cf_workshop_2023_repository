@@ -1,0 +1,11 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: intro
+chapters:
+- file: netcdf_format
+- file: cf-conventions
+- file: xarray_create_netcdf
+- file: radklim_conversion.ipynb
+- file: nco
