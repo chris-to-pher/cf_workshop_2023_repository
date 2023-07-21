@@ -1,0 +1,1459 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Erstellung von cf-kompatiblen netcdf-Daten mit R &#8212; How to create publishable netcdf-data</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'radklim_conversion_de';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">How to create publishable netcdf-data</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Introduction
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="netcdf_format.html">The netCDF data format</a></li>
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="cf-conventions.html">The NetCDF Climate and Forecast (CF) Metadata Conventions</a></li>
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="xarray_create_netcdf.html">Handling netcdf data with Xarray</a></li>
+<li class="toctree-l1"><a class="reference internal" href="radklim_conversion.html">Creating cf-compliant netCDF files in R</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nco.html">Manipulating attributes and variable names with NCO</a></li>
+
+
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2Fradklim_conversion_de.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/radklim_conversion_de.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Erstellung von cf-kompatiblen netcdf-Daten mit R</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lernziele">Lernziele</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einleitung">Einleitung</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#packages">Packages</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#daten-herunterladen">1. Daten herunterladen</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dateien-entpacken">2. Dateien entpacken</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#daten-einlesen">3. Daten einlesen</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ascii-teil">3.1. ASCII-Teil</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#daten-verarbeiten">4. Daten verarbeiten</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#uberprufung-der-netcdf-datei-auf-konformitat-mit-dem-cf-standard">Überprüfung der netcdf-Datei auf Konformität mit dem cf-Standard</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#weitere-materialien">Weitere Materialien</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <p><a id="top"></a></p>
+<section class="tex2jax_ignore mathjax_ignore" id="erstellung-von-cf-kompatiblen-netcdf-daten-mit-r">
+<h1>Erstellung von cf-kompatiblen netcdf-Daten mit R<a class="headerlink" href="#erstellung-von-cf-kompatiblen-netcdf-daten-mit-r" title="Permalink to this heading">#</a></h1>
+<hr class="docutils" />
+<section id="lernziele">
+<h2>Lernziele<a class="headerlink" href="#lernziele" title="Permalink to this heading">#</a></h2>
+<p>Am Ende dieses Tutorials werden die Lernenden in der Lage sein:</p>
+<ul class="simple">
+<li><p>binäre Daten in R einzulesen</p></li>
+<li><p>das netcdf Datenformat inklusive des Metadatenstandards “Climate and Forecast (CF)” zu erklären</p></li>
+<li><p>netcdf Dateien in R zu schreiben</p></li>
+</ul>
+<p>Als Beispieldatensatz werden Niederschlagsdaten der DWD Radarklimatologie genutzt.</p>
+</section>
+<section id="einleitung">
+<h2>Einleitung<a class="headerlink" href="#einleitung" title="Permalink to this heading">#</a></h2>
+<p>Die Radarklimatologie des Deutschen Wetterdienstes beinhaltet Niederschlagsmessungen basierend auf Radardaten, welche an Stationsmessungen angeeicht wurden. Sie bietet einen kontinuierliche Erfassung von Niederschlägen in Raum und Zeit mit einer räumlichen Auflösung von 1 km * 1 km und einer zeitlichen Auflösung von 1 h (RW-Produkt) bzw. 5 min (YW-Produkt). Der Zugang zu den Daten sowie weitere Informationen ist hier zu finden DOI:<em>10.5676/DWD/RADKLIM_RW_V2017.002</em></p>
+<p>Die Daten liegen in einem Binärformat vor und werden in diesem Tutorial in das netcdf-Format umgewandelt.</p>
+</section>
+<section id="packages">
+<h2>Packages<a class="headerlink" href="#packages" title="Permalink to this heading">#</a></h2>
+<p>Die folgenden R-packages werden benötigt:</p>
+<ul class="simple">
+<li><p>ncdf4</p></li>
+<li><p>chron</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">#install.packages(&quot;ncdf4&quot;)</span>
+<span class="c1">#install.packages(&quot;chron&quot;)</span>
+<span class="c1">#install.packages(&quot;fields&quot;)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="daten-herunterladen">
+<h2>1. Daten herunterladen<a class="headerlink" href="#daten-herunterladen" title="Permalink to this heading">#</a></h2>
+<p>Wir beginnen mit dem Herunterladen der Binärdaten vom opendata-Server des Deutschen Wetterdienstes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">system</span><span class="p">(</span><span class="s">&quot;mkdir ./data&quot;</span><span class="p">)</span>
+<span class="nf">system</span><span class="p">(</span><span class="s">&quot;wget https://opendata.dwd.de/climate_environment/CDC/grids_germany/hourly/radolan/reproc/2017_002/bin/2001/RW2017.002_200101.tar.gz&quot;</span><span class="p">,</span> <span class="n">intern</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"></div></div>
+</div>
+</section>
+<section id="dateien-entpacken">
+<h2>2. Dateien entpacken<a class="headerlink" href="#dateien-entpacken" title="Permalink to this heading">#</a></h2>
+<p>Die Daten sind abgespeichert als monatliche tar-archive. Durch das Entpacken werden stündliche Dateien mit den Namen raa01-rw2017.002_10000-***********<em>-dwd—bin gespeichert, wobei ‘</em>’ als Platzhalter für das Datum dient.</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input above-output-prompt docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">system</span><span class="p">(</span><span class="s">&quot;tar -xvf RW2017.002_200101.tar.gz -C data&quot;</span><span class="p">,</span> <span class="n">intern</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<details class="hide below-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell output</span>
+<span class="expanded">Hide code cell output</span>
+</summary>
+<div class="cell_output docutils container">
+<div class="output text_html"><style>
+.list-inline {list-style: none; margin:0; padding: 0}
+.list-inline>li {display: inline-block}
+.list-inline>li:not(:last-child)::after {content: "\00b7"; padding: 0 .5ex}
+</style>
+<ol class=list-inline><li>'raa01-rw2017.002_10000-0101312250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101312350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101312150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101312050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101311950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101311850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101311750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101311650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101311550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101311450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101311350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101311250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101311150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101311050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101310950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101310750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101310850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101310450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101310650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101310550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101310350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101310250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101310150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101310050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101302350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101302250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101302150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101302050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101301950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101301850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101301750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101301450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101301550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101301350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101301650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101301150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101301250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101300950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101301050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101300850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101300750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101300650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101300450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101300250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101300350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101300150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101300550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101300050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101292350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101292250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101292050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101292150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101291850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101291950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101291750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101291650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101291550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101291450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101291350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101291250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101291150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101291050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101290850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101290750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101290650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101290550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101290450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101290350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101290950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101290250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101290150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101290050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101282350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101282250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101282150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101282050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101281950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101281850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101281750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101281650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101281450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101281550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101281250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101281150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101281350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101281050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101280950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101280850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101280750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101280550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101280650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101280450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101280350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101280250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101280150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101280050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101272350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101272250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101272050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101272150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101271950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101271850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101271750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101271650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101271550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101271450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101271350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101271250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101271150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101270950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101271050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101270850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101270750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101270650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101270550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101270450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101270350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101270250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101270150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101270050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101262250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101262150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101262350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101261950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101262050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101261850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101261750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101261650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101261450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101261550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101261250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101261150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101261350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101261050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101260950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101260850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101260750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101260650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101260550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101260450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101260350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101260250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101260150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101260050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101252350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101252250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101252150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101252050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101251950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101251850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101251750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101251650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101251550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101251450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101251350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101251250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101251050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101251150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101250950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101250850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101250750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101250650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101250550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101250350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101250450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101250250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101250150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101250050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101242350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101242150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101242250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101242050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101241950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101241850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101241750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101241650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101241550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101241350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101241450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101241150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101241250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101241050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101240950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101240850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101240750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101240650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101240550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101240450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101240250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101240350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101240150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101240050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101232350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101232250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101231950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101231850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101232150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101232050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101231750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101231650-dwd---bin'</li><li>⋯</li><li>'raa01-rw2017.002_10000-0101091350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101091250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101091150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101091050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101090850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101090950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101090750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101090550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101090450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101090350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101090650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101090250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101090150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101090050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101082350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101082250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101082150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101082050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101081950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101081850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101081750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101081650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101081550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101081450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101081350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101081250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101081150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101081050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101080850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101080950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101080750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101080650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101080550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101080450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101080350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101080250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101080150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101080050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101072350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101072250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101072150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101072050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101071850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101071750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101071950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101071650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101071550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101071450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101071350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101071150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101071250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101070950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101071050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101070850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101070650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101070750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101070450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101070350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101070550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101070250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101070050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101070150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101062350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101062150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101062250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101062050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101061950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101061850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101061750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101061650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101061550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101061450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101061350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101061250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101061150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101061050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101060950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101060850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101060750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101060650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101060550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101060450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101060350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101060250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101060150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101060050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101052350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101052250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101052150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101051950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101052050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101051850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101051750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101051650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101051550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101051450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101051350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101051250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101051150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101051050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101050950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101050850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101050650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101050750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101050550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101050450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101050350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101050150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101050050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101042350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101050250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101042250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101042150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101042050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101041950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101041850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101041750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101041650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101041550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101041450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101041350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101041150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101041250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101041050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101040850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101040950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101040750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101040650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101040550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101040350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101040450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101040250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101040150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101040050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101032350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101032250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101032150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101032050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101031850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101031950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101031750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101031550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101031650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101031450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101031150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101031250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101031050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101030950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101030850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101030750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101030650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101030550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101030350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101030450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101030250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101031350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101030050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101030150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101022350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101022150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101022250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101022050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101021950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101021850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101021750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101021550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101021650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101021450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101021350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101021150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101021250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101021050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101020950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101020850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101020650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101020550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101020450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101020750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101020250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101020350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101020150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101020050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101012250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101012350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101012150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101012050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101011950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101011850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101011750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101011650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101011550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101011450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101011350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101011250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101011150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101011050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101010950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101010750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101010650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101010850-dwd---bin'</li></ol>
+</div></div>
+</details>
+</div>
+</section>
+<section id="daten-einlesen">
+<h2>3. Daten einlesen<a class="headerlink" href="#daten-einlesen" title="Permalink to this heading">#</a></h2>
+<p>Die Daten sind im sogenannten RADKLIM-Kompositformat abgespeichert, das heißt jede Datei besteht aus einem ASCII-Teil, welcher Metadaten enthält und einem Binär-Teil, welcher die eigentlichen Daten enthält. Das Kompositformat wird detailliert im folgenden Dokument beschrieben: <a class="reference external" href="https://www.dwd.de/DE/leistungen/radarklimatologie/radklim_kompositformat_1_0.pdf">https://www.dwd.de/DE/leistungen/radarklimatologie/radklim_kompositformat_1_0.pdf</a></p>
+<section id="ascii-teil">
+<h3>3.1. ASCII-Teil<a class="headerlink" href="#ascii-teil" title="Permalink to this heading">#</a></h3>
+<p>Aus dem ASCII-Teil der Datei <code class="docutils literal notranslate"><span class="pre">raa01-rw2017.002_10000-0101010050-dwd---bin</span></code> wurden die Metadaten ausgelesen und in der Variable <code class="docutils literal notranslate"><span class="pre">header</span></code> gespeichert.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">ncdf4</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">chron</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+
+<span class="n">filelist_name_only</span><span class="o">&lt;-</span><span class="nf">dir</span><span class="p">(</span><span class="s">&quot;./data&quot;</span><span class="p">,</span><span class="n">pattern</span><span class="o">=</span><span class="s">&quot;raa01-rw2017&quot;</span><span class="p">)</span>
+<span class="n">filelist_full_path</span><span class="o">&lt;-</span><span class="nf">normalizePath</span><span class="p">(</span><span class="nf">dir</span><span class="p">(</span><span class="s">&quot;./data&quot;</span><span class="p">,</span><span class="n">pattern</span><span class="o">=</span><span class="s">&quot;raa01-rw2017&quot;</span><span class="p">,</span><span class="n">full.names</span> <span class="o">=</span> <span class="bp">T</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">nfiles</span><span class="o">&lt;-</span><span class="nf">length</span><span class="p">(</span><span class="n">filelist_name_only</span><span class="p">)</span>
+<span class="n">radarmatrix</span><span class="o">&lt;-</span><span class="nf">array</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="m">0</span><span class="p">,</span><span class="n">dim</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">1100</span><span class="p">,</span><span class="m">900</span><span class="p">,</span><span class="n">nfiles</span><span class="p">))</span>
+<span class="n">time_vector</span><span class="o">&lt;-</span><span class="nf">vector</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s">&quot;double&quot;</span><span class="p">,</span><span class="n">length</span><span class="o">=</span><span class="n">nfiles</span><span class="p">)</span>
+
+<span class="c1">#Loop over 24 files (equal to 1 day)</span>
+
+<span class="nf">for</span><span class="p">(</span><span class="n">i</span> <span class="n">in</span> <span class="m">1</span><span class="o">:</span><span class="n">nfiles</span><span class="p">){</span>
+    <span class="n">year</span><span class="o">&lt;-</span><span class="nf">substr</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">filelist_name_only</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span><span class="m">24</span><span class="p">,</span><span class="m">25</span><span class="p">)</span>
+    <span class="n">month</span><span class="o">&lt;-</span><span class="nf">substr</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">filelist_name_only</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span><span class="m">26</span><span class="p">,</span><span class="m">27</span><span class="p">)</span>
+    <span class="n">day</span><span class="o">&lt;-</span><span class="nf">substr</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">filelist_name_only</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span><span class="m">28</span><span class="p">,</span><span class="m">29</span><span class="p">)</span>
+    <span class="n">hour</span><span class="o">&lt;-</span><span class="nf">substr</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">filelist_name_only</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span><span class="m">30</span><span class="p">,</span><span class="m">31</span><span class="p">)</span>
+    <span class="n">minute</span><span class="o">&lt;-</span><span class="nf">substr</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">filelist_name_only</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span><span class="m">32</span><span class="p">,</span><span class="m">33</span><span class="p">)</span>
+    
+    <span class="n">time_vector</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="nf">chron</span><span class="p">(</span><span class="nf">dates</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="n">month</span><span class="p">,</span><span class="s">&quot;/&quot;</span><span class="p">,</span><span class="n">day</span><span class="p">,</span><span class="s">&quot;/20&quot;</span><span class="p">,</span><span class="n">year</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">))),</span><span class="n">times</span><span class="o">=</span><span class="nf">times</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="n">hour</span><span class="p">,</span><span class="s">&quot;:&quot;</span><span class="p">,</span><span class="n">minute</span><span class="p">,</span><span class="s">&quot;:00&quot;</span><span class="p">))),</span><span class="n">origin</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">01</span><span class="p">,</span><span class="m">01</span><span class="p">,</span><span class="m">1900</span><span class="p">))</span>
+    <span class="n">con</span><span class="o">=</span><span class="nf">file</span><span class="p">(</span><span class="n">filelist_full_path</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="s">&quot;rb&quot;</span><span class="p">)</span>
+    
+    <span class="n">header1</span><span class="o">&lt;-</span><span class="nf">readChar</span><span class="p">(</span><span class="n">con</span><span class="p">,</span><span class="m">92</span><span class="p">)</span>
+    <span class="n">length_of_stations_in_header</span><span class="o">&lt;-</span><span class="nf">as.numeric</span><span class="p">(</span><span class="nf">readChar</span><span class="p">(</span><span class="n">con</span><span class="p">,</span><span class="m">2</span><span class="p">))</span>
+    <span class="n">stations</span><span class="o">&lt;-</span><span class="nf">readChar</span><span class="p">(</span><span class="n">con</span><span class="p">,</span><span class="n">length_of_stations_in_header</span><span class="p">)</span>
+    <span class="n">ext</span><span class="o">&lt;-</span><span class="nf">readChar</span><span class="p">(</span><span class="n">con</span><span class="p">,</span><span class="m">1</span><span class="p">)</span>
+    <span class="n">x</span><span class="o">&lt;-</span><span class="nf">readBin</span><span class="p">(</span><span class="n">con</span><span class="p">,</span><span class="s">&quot;integer&quot;</span><span class="p">,</span><span class="n">n</span><span class="o">=</span><span class="m">990000</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="n">signed</span><span class="o">=</span><span class="bp">F</span><span class="p">,</span><span class="n">endian</span><span class="o">=</span><span class="s">&quot;little&quot;</span><span class="p">)</span>
+    <span class="nf">close</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">temp</span><span class="o">&lt;-</span><span class="nf">matrix</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">ncol</span><span class="o">=</span><span class="p">(</span><span class="m">900</span><span class="p">),</span><span class="n">nrow</span><span class="o">=</span><span class="m">1100</span><span class="p">,</span><span class="n">byrow</span><span class="o">=</span><span class="bp">T</span><span class="p">)</span>
+    <span class="n">temp</span><span class="p">[(</span><span class="nf">which</span><span class="p">(</span><span class="n">temp</span><span class="o">==</span><span class="m">10692</span><span class="p">))]</span><span class="o">&lt;-</span><span class="kc">NA</span>
+    <span class="n">radarmatrix</span><span class="p">[,,</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;-</span><span class="n">temp</span>
+<span class="p">}</span>
+
+<span class="n">radarmatrix</span><span class="p">[</span><span class="nf">which</span><span class="p">(</span><span class="n">radarmatrix</span><span class="o">&gt;</span><span class="m">1000</span><span class="p">)]</span><span class="o">&lt;-</span><span class="kc">NA</span>
+<span class="n">radarmatrix</span><span class="o">&lt;-</span><span class="n">radarmatrix</span><span class="o">/</span><span class="m">10</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[1] &quot;i ist  1&quot;
+[1] &quot;i ist  2&quot;
+[1] &quot;i ist  3&quot;
+[1] &quot;i ist  4&quot;
+[1] &quot;i ist  5&quot;
+[1] &quot;i ist  6&quot;
+[1] &quot;i ist  7&quot;
+[1] &quot;i ist  8&quot;
+[1] &quot;i ist  9&quot;
+[1] &quot;i ist  10&quot;
+[1] &quot;i ist  11&quot;
+[1] &quot;i ist  12&quot;
+[1] &quot;i ist  13&quot;
+[1] &quot;i ist  14&quot;
+[1] &quot;i ist  15&quot;
+[1] &quot;i ist  16&quot;
+[1] &quot;i ist  17&quot;
+[1] &quot;i ist  18&quot;
+[1] &quot;i ist  19&quot;
+[1] &quot;i ist  20&quot;
+[1] &quot;i ist  21&quot;
+[1] &quot;i ist  22&quot;
+[1] &quot;i ist  23&quot;
+[1] &quot;i ist  24&quot;
+[1] &quot;i ist  25&quot;
+[1] &quot;i ist  26&quot;
+[1] &quot;i ist  27&quot;
+[1] &quot;i ist  28&quot;
+[1] &quot;i ist  29&quot;
+[1] &quot;i ist  30&quot;
+[1] &quot;i ist  31&quot;
+[1] &quot;i ist  32&quot;
+[1] &quot;i ist  33&quot;
+[1] &quot;i ist  34&quot;
+[1] &quot;i ist  35&quot;
+[1] &quot;i ist  36&quot;
+[1] &quot;i ist  37&quot;
+[1] &quot;i ist  38&quot;
+[1] &quot;i ist  39&quot;
+[1] &quot;i ist  40&quot;
+[1] &quot;i ist  41&quot;
+[1] &quot;i ist  42&quot;
+[1] &quot;i ist  43&quot;
+[1] &quot;i ist  44&quot;
+[1] &quot;i ist  45&quot;
+[1] &quot;i ist  46&quot;
+[1] &quot;i ist  47&quot;
+[1] &quot;i ist  48&quot;
+[1] &quot;i ist  49&quot;
+[1] &quot;i ist  50&quot;
+[1] &quot;i ist  51&quot;
+[1] &quot;i ist  52&quot;
+[1] &quot;i ist  53&quot;
+[1] &quot;i ist  54&quot;
+[1] &quot;i ist  55&quot;
+[1] &quot;i ist  56&quot;
+[1] &quot;i ist  57&quot;
+[1] &quot;i ist  58&quot;
+[1] &quot;i ist  59&quot;
+[1] &quot;i ist  60&quot;
+[1] &quot;i ist  61&quot;
+[1] &quot;i ist  62&quot;
+[1] &quot;i ist  63&quot;
+[1] &quot;i ist  64&quot;
+[1] &quot;i ist  65&quot;
+[1] &quot;i ist  66&quot;
+[1] &quot;i ist  67&quot;
+[1] &quot;i ist  68&quot;
+[1] &quot;i ist  69&quot;
+[1] &quot;i ist  70&quot;
+[1] &quot;i ist  71&quot;
+[1] &quot;i ist  72&quot;
+[1] &quot;i ist  73&quot;
+[1] &quot;i ist  74&quot;
+[1] &quot;i ist  75&quot;
+[1] &quot;i ist  76&quot;
+[1] &quot;i ist  77&quot;
+[1] &quot;i ist  78&quot;
+[1] &quot;i ist  79&quot;
+[1] &quot;i ist  80&quot;
+[1] &quot;i ist  81&quot;
+[1] &quot;i ist  82&quot;
+[1] &quot;i ist  83&quot;
+[1] &quot;i ist  84&quot;
+[1] &quot;i ist  85&quot;
+[1] &quot;i ist  86&quot;
+[1] &quot;i ist  87&quot;
+[1] &quot;i ist  88&quot;
+[1] &quot;i ist  89&quot;
+[1] &quot;i ist  90&quot;
+[1] &quot;i ist  91&quot;
+[1] &quot;i ist  92&quot;
+[1] &quot;i ist  93&quot;
+[1] &quot;i ist  94&quot;
+[1] &quot;i ist  95&quot;
+[1] &quot;i ist  96&quot;
+[1] &quot;i ist  97&quot;
+[1] &quot;i ist  98&quot;
+[1] &quot;i ist  99&quot;
+[1] &quot;i ist  100&quot;
+[1] &quot;i ist  101&quot;
+[1] &quot;i ist  102&quot;
+[1] &quot;i ist  103&quot;
+[1] &quot;i ist  104&quot;
+[1] &quot;i ist  105&quot;
+[1] &quot;i ist  106&quot;
+[1] &quot;i ist  107&quot;
+[1] &quot;i ist  108&quot;
+[1] &quot;i ist  109&quot;
+[1] &quot;i ist  110&quot;
+[1] &quot;i ist  111&quot;
+[1] &quot;i ist  112&quot;
+[1] &quot;i ist  113&quot;
+[1] &quot;i ist  114&quot;
+[1] &quot;i ist  115&quot;
+[1] &quot;i ist  116&quot;
+[1] &quot;i ist  117&quot;
+[1] &quot;i ist  118&quot;
+[1] &quot;i ist  119&quot;
+[1] &quot;i ist  120&quot;
+[1] &quot;i ist  121&quot;
+[1] &quot;i ist  122&quot;
+[1] &quot;i ist  123&quot;
+[1] &quot;i ist  124&quot;
+[1] &quot;i ist  125&quot;
+[1] &quot;i ist  126&quot;
+[1] &quot;i ist  127&quot;
+[1] &quot;i ist  128&quot;
+[1] &quot;i ist  129&quot;
+[1] &quot;i ist  130&quot;
+[1] &quot;i ist  131&quot;
+[1] &quot;i ist  132&quot;
+[1] &quot;i ist  133&quot;
+[1] &quot;i ist  134&quot;
+[1] &quot;i ist  135&quot;
+[1] &quot;i ist  136&quot;
+[1] &quot;i ist  137&quot;
+[1] &quot;i ist  138&quot;
+[1] &quot;i ist  139&quot;
+[1] &quot;i ist  140&quot;
+[1] &quot;i ist  141&quot;
+[1] &quot;i ist  142&quot;
+[1] &quot;i ist  143&quot;
+[1] &quot;i ist  144&quot;
+[1] &quot;i ist  145&quot;
+[1] &quot;i ist  146&quot;
+[1] &quot;i ist  147&quot;
+[1] &quot;i ist  148&quot;
+[1] &quot;i ist  149&quot;
+[1] &quot;i ist  150&quot;
+[1] &quot;i ist  151&quot;
+[1] &quot;i ist  152&quot;
+[1] &quot;i ist  153&quot;
+[1] &quot;i ist  154&quot;
+[1] &quot;i ist  155&quot;
+[1] &quot;i ist  156&quot;
+[1] &quot;i ist  157&quot;
+[1] &quot;i ist  158&quot;
+[1] &quot;i ist  159&quot;
+[1] &quot;i ist  160&quot;
+[1] &quot;i ist  161&quot;
+[1] &quot;i ist  162&quot;
+[1] &quot;i ist  163&quot;
+[1] &quot;i ist  164&quot;
+[1] &quot;i ist  165&quot;
+[1] &quot;i ist  166&quot;
+[1] &quot;i ist  167&quot;
+[1] &quot;i ist  168&quot;
+[1] &quot;i ist  169&quot;
+[1] &quot;i ist  170&quot;
+[1] &quot;i ist  171&quot;
+[1] &quot;i ist  172&quot;
+[1] &quot;i ist  173&quot;
+[1] &quot;i ist  174&quot;
+[1] &quot;i ist  175&quot;
+[1] &quot;i ist  176&quot;
+[1] &quot;i ist  177&quot;
+[1] &quot;i ist  178&quot;
+[1] &quot;i ist  179&quot;
+[1] &quot;i ist  180&quot;
+[1] &quot;i ist  181&quot;
+[1] &quot;i ist  182&quot;
+[1] &quot;i ist  183&quot;
+[1] &quot;i ist  184&quot;
+[1] &quot;i ist  185&quot;
+[1] &quot;i ist  186&quot;
+[1] &quot;i ist  187&quot;
+[1] &quot;i ist  188&quot;
+[1] &quot;i ist  189&quot;
+[1] &quot;i ist  190&quot;
+[1] &quot;i ist  191&quot;
+[1] &quot;i ist  192&quot;
+[1] &quot;i ist  193&quot;
+[1] &quot;i ist  194&quot;
+[1] &quot;i ist  195&quot;
+[1] &quot;i ist  196&quot;
+[1] &quot;i ist  197&quot;
+[1] &quot;i ist  198&quot;
+[1] &quot;i ist  199&quot;
+[1] &quot;i ist  200&quot;
+[1] &quot;i ist  201&quot;
+[1] &quot;i ist  202&quot;
+[1] &quot;i ist  203&quot;
+[1] &quot;i ist  204&quot;
+[1] &quot;i ist  205&quot;
+[1] &quot;i ist  206&quot;
+[1] &quot;i ist  207&quot;
+[1] &quot;i ist  208&quot;
+[1] &quot;i ist  209&quot;
+[1] &quot;i ist  210&quot;
+[1] &quot;i ist  211&quot;
+[1] &quot;i ist  212&quot;
+[1] &quot;i ist  213&quot;
+[1] &quot;i ist  214&quot;
+[1] &quot;i ist  215&quot;
+[1] &quot;i ist  216&quot;
+[1] &quot;i ist  217&quot;
+[1] &quot;i ist  218&quot;
+[1] &quot;i ist  219&quot;
+[1] &quot;i ist  220&quot;
+[1] &quot;i ist  221&quot;
+[1] &quot;i ist  222&quot;
+[1] &quot;i ist  223&quot;
+[1] &quot;i ist  224&quot;
+[1] &quot;i ist  225&quot;
+[1] &quot;i ist  226&quot;
+[1] &quot;i ist  227&quot;
+[1] &quot;i ist  228&quot;
+[1] &quot;i ist  229&quot;
+[1] &quot;i ist  230&quot;
+[1] &quot;i ist  231&quot;
+[1] &quot;i ist  232&quot;
+[1] &quot;i ist  233&quot;
+[1] &quot;i ist  234&quot;
+[1] &quot;i ist  235&quot;
+[1] &quot;i ist  236&quot;
+[1] &quot;i ist  237&quot;
+[1] &quot;i ist  238&quot;
+[1] &quot;i ist  239&quot;
+[1] &quot;i ist  240&quot;
+[1] &quot;i ist  241&quot;
+[1] &quot;i ist  242&quot;
+[1] &quot;i ist  243&quot;
+[1] &quot;i ist  244&quot;
+[1] &quot;i ist  245&quot;
+[1] &quot;i ist  246&quot;
+[1] &quot;i ist  247&quot;
+[1] &quot;i ist  248&quot;
+[1] &quot;i ist  249&quot;
+[1] &quot;i ist  250&quot;
+[1] &quot;i ist  251&quot;
+[1] &quot;i ist  252&quot;
+[1] &quot;i ist  253&quot;
+[1] &quot;i ist  254&quot;
+[1] &quot;i ist  255&quot;
+[1] &quot;i ist  256&quot;
+[1] &quot;i ist  257&quot;
+[1] &quot;i ist  258&quot;
+[1] &quot;i ist  259&quot;
+[1] &quot;i ist  260&quot;
+[1] &quot;i ist  261&quot;
+[1] &quot;i ist  262&quot;
+[1] &quot;i ist  263&quot;
+[1] &quot;i ist  264&quot;
+[1] &quot;i ist  265&quot;
+[1] &quot;i ist  266&quot;
+[1] &quot;i ist  267&quot;
+[1] &quot;i ist  268&quot;
+[1] &quot;i ist  269&quot;
+[1] &quot;i ist  270&quot;
+[1] &quot;i ist  271&quot;
+[1] &quot;i ist  272&quot;
+[1] &quot;i ist  273&quot;
+[1] &quot;i ist  274&quot;
+[1] &quot;i ist  275&quot;
+[1] &quot;i ist  276&quot;
+[1] &quot;i ist  277&quot;
+[1] &quot;i ist  278&quot;
+[1] &quot;i ist  279&quot;
+[1] &quot;i ist  280&quot;
+[1] &quot;i ist  281&quot;
+[1] &quot;i ist  282&quot;
+[1] &quot;i ist  283&quot;
+[1] &quot;i ist  284&quot;
+[1] &quot;i ist  285&quot;
+[1] &quot;i ist  286&quot;
+[1] &quot;i ist  287&quot;
+[1] &quot;i ist  288&quot;
+[1] &quot;i ist  289&quot;
+[1] &quot;i ist  290&quot;
+[1] &quot;i ist  291&quot;
+[1] &quot;i ist  292&quot;
+[1] &quot;i ist  293&quot;
+[1] &quot;i ist  294&quot;
+[1] &quot;i ist  295&quot;
+[1] &quot;i ist  296&quot;
+[1] &quot;i ist  297&quot;
+[1] &quot;i ist  298&quot;
+[1] &quot;i ist  299&quot;
+[1] &quot;i ist  300&quot;
+[1] &quot;i ist  301&quot;
+[1] &quot;i ist  302&quot;
+[1] &quot;i ist  303&quot;
+[1] &quot;i ist  304&quot;
+[1] &quot;i ist  305&quot;
+[1] &quot;i ist  306&quot;
+[1] &quot;i ist  307&quot;
+[1] &quot;i ist  308&quot;
+[1] &quot;i ist  309&quot;
+[1] &quot;i ist  310&quot;
+[1] &quot;i ist  311&quot;
+[1] &quot;i ist  312&quot;
+[1] &quot;i ist  313&quot;
+[1] &quot;i ist  314&quot;
+[1] &quot;i ist  315&quot;
+[1] &quot;i ist  316&quot;
+[1] &quot;i ist  317&quot;
+[1] &quot;i ist  318&quot;
+[1] &quot;i ist  319&quot;
+[1] &quot;i ist  320&quot;
+[1] &quot;i ist  321&quot;
+[1] &quot;i ist  322&quot;
+[1] &quot;i ist  323&quot;
+[1] &quot;i ist  324&quot;
+[1] &quot;i ist  325&quot;
+[1] &quot;i ist  326&quot;
+[1] &quot;i ist  327&quot;
+[1] &quot;i ist  328&quot;
+[1] &quot;i ist  329&quot;
+[1] &quot;i ist  330&quot;
+[1] &quot;i ist  331&quot;
+[1] &quot;i ist  332&quot;
+[1] &quot;i ist  333&quot;
+[1] &quot;i ist  334&quot;
+[1] &quot;i ist  335&quot;
+[1] &quot;i ist  336&quot;
+[1] &quot;i ist  337&quot;
+[1] &quot;i ist  338&quot;
+[1] &quot;i ist  339&quot;
+[1] &quot;i ist  340&quot;
+[1] &quot;i ist  341&quot;
+[1] &quot;i ist  342&quot;
+[1] &quot;i ist  343&quot;
+[1] &quot;i ist  344&quot;
+[1] &quot;i ist  345&quot;
+[1] &quot;i ist  346&quot;
+[1] &quot;i ist  347&quot;
+[1] &quot;i ist  348&quot;
+[1] &quot;i ist  349&quot;
+[1] &quot;i ist  350&quot;
+[1] &quot;i ist  351&quot;
+[1] &quot;i ist  352&quot;
+[1] &quot;i ist  353&quot;
+[1] &quot;i ist  354&quot;
+[1] &quot;i ist  355&quot;
+[1] &quot;i ist  356&quot;
+[1] &quot;i ist  357&quot;
+[1] &quot;i ist  358&quot;
+[1] &quot;i ist  359&quot;
+[1] &quot;i ist  360&quot;
+[1] &quot;i ist  361&quot;
+[1] &quot;i ist  362&quot;
+[1] &quot;i ist  363&quot;
+[1] &quot;i ist  364&quot;
+[1] &quot;i ist  365&quot;
+[1] &quot;i ist  366&quot;
+[1] &quot;i ist  367&quot;
+[1] &quot;i ist  368&quot;
+[1] &quot;i ist  369&quot;
+[1] &quot;i ist  370&quot;
+[1] &quot;i ist  371&quot;
+[1] &quot;i ist  372&quot;
+[1] &quot;i ist  373&quot;
+[1] &quot;i ist  374&quot;
+[1] &quot;i ist  375&quot;
+[1] &quot;i ist  376&quot;
+[1] &quot;i ist  377&quot;
+[1] &quot;i ist  378&quot;
+[1] &quot;i ist  379&quot;
+[1] &quot;i ist  380&quot;
+[1] &quot;i ist  381&quot;
+[1] &quot;i ist  382&quot;
+[1] &quot;i ist  383&quot;
+[1] &quot;i ist  384&quot;
+[1] &quot;i ist  385&quot;
+[1] &quot;i ist  386&quot;
+[1] &quot;i ist  387&quot;
+[1] &quot;i ist  388&quot;
+[1] &quot;i ist  389&quot;
+[1] &quot;i ist  390&quot;
+[1] &quot;i ist  391&quot;
+[1] &quot;i ist  392&quot;
+[1] &quot;i ist  393&quot;
+[1] &quot;i ist  394&quot;
+[1] &quot;i ist  395&quot;
+[1] &quot;i ist  396&quot;
+[1] &quot;i ist  397&quot;
+[1] &quot;i ist  398&quot;
+[1] &quot;i ist  399&quot;
+[1] &quot;i ist  400&quot;
+[1] &quot;i ist  401&quot;
+[1] &quot;i ist  402&quot;
+[1] &quot;i ist  403&quot;
+[1] &quot;i ist  404&quot;
+[1] &quot;i ist  405&quot;
+[1] &quot;i ist  406&quot;
+[1] &quot;i ist  407&quot;
+[1] &quot;i ist  408&quot;
+[1] &quot;i ist  409&quot;
+[1] &quot;i ist  410&quot;
+[1] &quot;i ist  411&quot;
+[1] &quot;i ist  412&quot;
+[1] &quot;i ist  413&quot;
+[1] &quot;i ist  414&quot;
+[1] &quot;i ist  415&quot;
+[1] &quot;i ist  416&quot;
+[1] &quot;i ist  417&quot;
+[1] &quot;i ist  418&quot;
+[1] &quot;i ist  419&quot;
+[1] &quot;i ist  420&quot;
+[1] &quot;i ist  421&quot;
+[1] &quot;i ist  422&quot;
+[1] &quot;i ist  423&quot;
+[1] &quot;i ist  424&quot;
+[1] &quot;i ist  425&quot;
+[1] &quot;i ist  426&quot;
+[1] &quot;i ist  427&quot;
+[1] &quot;i ist  428&quot;
+[1] &quot;i ist  429&quot;
+[1] &quot;i ist  430&quot;
+[1] &quot;i ist  431&quot;
+[1] &quot;i ist  432&quot;
+[1] &quot;i ist  433&quot;
+[1] &quot;i ist  434&quot;
+[1] &quot;i ist  435&quot;
+[1] &quot;i ist  436&quot;
+[1] &quot;i ist  437&quot;
+[1] &quot;i ist  438&quot;
+[1] &quot;i ist  439&quot;
+[1] &quot;i ist  440&quot;
+[1] &quot;i ist  441&quot;
+[1] &quot;i ist  442&quot;
+[1] &quot;i ist  443&quot;
+[1] &quot;i ist  444&quot;
+[1] &quot;i ist  445&quot;
+[1] &quot;i ist  446&quot;
+[1] &quot;i ist  447&quot;
+[1] &quot;i ist  448&quot;
+[1] &quot;i ist  449&quot;
+[1] &quot;i ist  450&quot;
+[1] &quot;i ist  451&quot;
+[1] &quot;i ist  452&quot;
+[1] &quot;i ist  453&quot;
+[1] &quot;i ist  454&quot;
+[1] &quot;i ist  455&quot;
+[1] &quot;i ist  456&quot;
+[1] &quot;i ist  457&quot;
+[1] &quot;i ist  458&quot;
+[1] &quot;i ist  459&quot;
+[1] &quot;i ist  460&quot;
+[1] &quot;i ist  461&quot;
+[1] &quot;i ist  462&quot;
+[1] &quot;i ist  463&quot;
+[1] &quot;i ist  464&quot;
+[1] &quot;i ist  465&quot;
+[1] &quot;i ist  466&quot;
+[1] &quot;i ist  467&quot;
+[1] &quot;i ist  468&quot;
+[1] &quot;i ist  469&quot;
+[1] &quot;i ist  470&quot;
+[1] &quot;i ist  471&quot;
+[1] &quot;i ist  472&quot;
+[1] &quot;i ist  473&quot;
+[1] &quot;i ist  474&quot;
+[1] &quot;i ist  475&quot;
+[1] &quot;i ist  476&quot;
+[1] &quot;i ist  477&quot;
+[1] &quot;i ist  478&quot;
+[1] &quot;i ist  479&quot;
+[1] &quot;i ist  480&quot;
+[1] &quot;i ist  481&quot;
+[1] &quot;i ist  482&quot;
+[1] &quot;i ist  483&quot;
+[1] &quot;i ist  484&quot;
+[1] &quot;i ist  485&quot;
+[1] &quot;i ist  486&quot;
+[1] &quot;i ist  487&quot;
+[1] &quot;i ist  488&quot;
+[1] &quot;i ist  489&quot;
+[1] &quot;i ist  490&quot;
+[1] &quot;i ist  491&quot;
+[1] &quot;i ist  492&quot;
+[1] &quot;i ist  493&quot;
+[1] &quot;i ist  494&quot;
+[1] &quot;i ist  495&quot;
+[1] &quot;i ist  496&quot;
+[1] &quot;i ist  497&quot;
+[1] &quot;i ist  498&quot;
+[1] &quot;i ist  499&quot;
+[1] &quot;i ist  500&quot;
+[1] &quot;i ist  501&quot;
+[1] &quot;i ist  502&quot;
+[1] &quot;i ist  503&quot;
+[1] &quot;i ist  504&quot;
+[1] &quot;i ist  505&quot;
+[1] &quot;i ist  506&quot;
+[1] &quot;i ist  507&quot;
+[1] &quot;i ist  508&quot;
+[1] &quot;i ist  509&quot;
+[1] &quot;i ist  510&quot;
+[1] &quot;i ist  511&quot;
+[1] &quot;i ist  512&quot;
+[1] &quot;i ist  513&quot;
+[1] &quot;i ist  514&quot;
+[1] &quot;i ist  515&quot;
+[1] &quot;i ist  516&quot;
+[1] &quot;i ist  517&quot;
+[1] &quot;i ist  518&quot;
+[1] &quot;i ist  519&quot;
+[1] &quot;i ist  520&quot;
+[1] &quot;i ist  521&quot;
+[1] &quot;i ist  522&quot;
+[1] &quot;i ist  523&quot;
+[1] &quot;i ist  524&quot;
+[1] &quot;i ist  525&quot;
+[1] &quot;i ist  526&quot;
+[1] &quot;i ist  527&quot;
+[1] &quot;i ist  528&quot;
+[1] &quot;i ist  529&quot;
+[1] &quot;i ist  530&quot;
+[1] &quot;i ist  531&quot;
+[1] &quot;i ist  532&quot;
+[1] &quot;i ist  533&quot;
+[1] &quot;i ist  534&quot;
+[1] &quot;i ist  535&quot;
+[1] &quot;i ist  536&quot;
+[1] &quot;i ist  537&quot;
+[1] &quot;i ist  538&quot;
+[1] &quot;i ist  539&quot;
+[1] &quot;i ist  540&quot;
+[1] &quot;i ist  541&quot;
+[1] &quot;i ist  542&quot;
+[1] &quot;i ist  543&quot;
+[1] &quot;i ist  544&quot;
+[1] &quot;i ist  545&quot;
+[1] &quot;i ist  546&quot;
+[1] &quot;i ist  547&quot;
+[1] &quot;i ist  548&quot;
+[1] &quot;i ist  549&quot;
+[1] &quot;i ist  550&quot;
+[1] &quot;i ist  551&quot;
+[1] &quot;i ist  552&quot;
+[1] &quot;i ist  553&quot;
+[1] &quot;i ist  554&quot;
+[1] &quot;i ist  555&quot;
+[1] &quot;i ist  556&quot;
+[1] &quot;i ist  557&quot;
+[1] &quot;i ist  558&quot;
+[1] &quot;i ist  559&quot;
+[1] &quot;i ist  560&quot;
+[1] &quot;i ist  561&quot;
+[1] &quot;i ist  562&quot;
+[1] &quot;i ist  563&quot;
+[1] &quot;i ist  564&quot;
+[1] &quot;i ist  565&quot;
+[1] &quot;i ist  566&quot;
+[1] &quot;i ist  567&quot;
+[1] &quot;i ist  568&quot;
+[1] &quot;i ist  569&quot;
+[1] &quot;i ist  570&quot;
+[1] &quot;i ist  571&quot;
+[1] &quot;i ist  572&quot;
+[1] &quot;i ist  573&quot;
+[1] &quot;i ist  574&quot;
+[1] &quot;i ist  575&quot;
+[1] &quot;i ist  576&quot;
+[1] &quot;i ist  577&quot;
+[1] &quot;i ist  578&quot;
+[1] &quot;i ist  579&quot;
+[1] &quot;i ist  580&quot;
+[1] &quot;i ist  581&quot;
+[1] &quot;i ist  582&quot;
+[1] &quot;i ist  583&quot;
+[1] &quot;i ist  584&quot;
+[1] &quot;i ist  585&quot;
+[1] &quot;i ist  586&quot;
+[1] &quot;i ist  587&quot;
+[1] &quot;i ist  588&quot;
+[1] &quot;i ist  589&quot;
+[1] &quot;i ist  590&quot;
+[1] &quot;i ist  591&quot;
+[1] &quot;i ist  592&quot;
+[1] &quot;i ist  593&quot;
+[1] &quot;i ist  594&quot;
+[1] &quot;i ist  595&quot;
+[1] &quot;i ist  596&quot;
+[1] &quot;i ist  597&quot;
+[1] &quot;i ist  598&quot;
+[1] &quot;i ist  599&quot;
+[1] &quot;i ist  600&quot;
+[1] &quot;i ist  601&quot;
+[1] &quot;i ist  602&quot;
+[1] &quot;i ist  603&quot;
+[1] &quot;i ist  604&quot;
+[1] &quot;i ist  605&quot;
+[1] &quot;i ist  606&quot;
+[1] &quot;i ist  607&quot;
+[1] &quot;i ist  608&quot;
+[1] &quot;i ist  609&quot;
+[1] &quot;i ist  610&quot;
+[1] &quot;i ist  611&quot;
+[1] &quot;i ist  612&quot;
+[1] &quot;i ist  613&quot;
+[1] &quot;i ist  614&quot;
+[1] &quot;i ist  615&quot;
+[1] &quot;i ist  616&quot;
+[1] &quot;i ist  617&quot;
+[1] &quot;i ist  618&quot;
+[1] &quot;i ist  619&quot;
+[1] &quot;i ist  620&quot;
+[1] &quot;i ist  621&quot;
+[1] &quot;i ist  622&quot;
+[1] &quot;i ist  623&quot;
+[1] &quot;i ist  624&quot;
+[1] &quot;i ist  625&quot;
+[1] &quot;i ist  626&quot;
+[1] &quot;i ist  627&quot;
+[1] &quot;i ist  628&quot;
+[1] &quot;i ist  629&quot;
+[1] &quot;i ist  630&quot;
+[1] &quot;i ist  631&quot;
+[1] &quot;i ist  632&quot;
+[1] &quot;i ist  633&quot;
+[1] &quot;i ist  634&quot;
+[1] &quot;i ist  635&quot;
+[1] &quot;i ist  636&quot;
+[1] &quot;i ist  637&quot;
+[1] &quot;i ist  638&quot;
+[1] &quot;i ist  639&quot;
+[1] &quot;i ist  640&quot;
+[1] &quot;i ist  641&quot;
+[1] &quot;i ist  642&quot;
+[1] &quot;i ist  643&quot;
+[1] &quot;i ist  644&quot;
+[1] &quot;i ist  645&quot;
+[1] &quot;i ist  646&quot;
+[1] &quot;i ist  647&quot;
+[1] &quot;i ist  648&quot;
+[1] &quot;i ist  649&quot;
+[1] &quot;i ist  650&quot;
+[1] &quot;i ist  651&quot;
+[1] &quot;i ist  652&quot;
+[1] &quot;i ist  653&quot;
+[1] &quot;i ist  654&quot;
+[1] &quot;i ist  655&quot;
+[1] &quot;i ist  656&quot;
+[1] &quot;i ist  657&quot;
+[1] &quot;i ist  658&quot;
+[1] &quot;i ist  659&quot;
+[1] &quot;i ist  660&quot;
+[1] &quot;i ist  661&quot;
+[1] &quot;i ist  662&quot;
+[1] &quot;i ist  663&quot;
+[1] &quot;i ist  664&quot;
+[1] &quot;i ist  665&quot;
+[1] &quot;i ist  666&quot;
+[1] &quot;i ist  667&quot;
+[1] &quot;i ist  668&quot;
+[1] &quot;i ist  669&quot;
+[1] &quot;i ist  670&quot;
+[1] &quot;i ist  671&quot;
+[1] &quot;i ist  672&quot;
+[1] &quot;i ist  673&quot;
+[1] &quot;i ist  674&quot;
+[1] &quot;i ist  675&quot;
+[1] &quot;i ist  676&quot;
+[1] &quot;i ist  677&quot;
+[1] &quot;i ist  678&quot;
+[1] &quot;i ist  679&quot;
+[1] &quot;i ist  680&quot;
+[1] &quot;i ist  681&quot;
+[1] &quot;i ist  682&quot;
+[1] &quot;i ist  683&quot;
+[1] &quot;i ist  684&quot;
+[1] &quot;i ist  685&quot;
+[1] &quot;i ist  686&quot;
+[1] &quot;i ist  687&quot;
+[1] &quot;i ist  688&quot;
+[1] &quot;i ist  689&quot;
+[1] &quot;i ist  690&quot;
+[1] &quot;i ist  691&quot;
+[1] &quot;i ist  692&quot;
+[1] &quot;i ist  693&quot;
+[1] &quot;i ist  694&quot;
+[1] &quot;i ist  695&quot;
+[1] &quot;i ist  696&quot;
+[1] &quot;i ist  697&quot;
+[1] &quot;i ist  698&quot;
+[1] &quot;i ist  699&quot;
+[1] &quot;i ist  700&quot;
+[1] &quot;i ist  701&quot;
+[1] &quot;i ist  702&quot;
+[1] &quot;i ist  703&quot;
+[1] &quot;i ist  704&quot;
+[1] &quot;i ist  705&quot;
+[1] &quot;i ist  706&quot;
+[1] &quot;i ist  707&quot;
+[1] &quot;i ist  708&quot;
+[1] &quot;i ist  709&quot;
+[1] &quot;i ist  710&quot;
+[1] &quot;i ist  711&quot;
+[1] &quot;i ist  712&quot;
+[1] &quot;i ist  713&quot;
+[1] &quot;i ist  714&quot;
+[1] &quot;i ist  715&quot;
+[1] &quot;i ist  716&quot;
+[1] &quot;i ist  717&quot;
+[1] &quot;i ist  718&quot;
+[1] &quot;i ist  719&quot;
+[1] &quot;i ist  720&quot;
+[1] &quot;i ist  721&quot;
+[1] &quot;i ist  722&quot;
+[1] &quot;i ist  723&quot;
+[1] &quot;i ist  724&quot;
+[1] &quot;i ist  725&quot;
+[1] &quot;i ist  726&quot;
+[1] &quot;i ist  727&quot;
+[1] &quot;i ist  728&quot;
+[1] &quot;i ist  729&quot;
+[1] &quot;i ist  730&quot;
+[1] &quot;i ist  731&quot;
+[1] &quot;i ist  732&quot;
+[1] &quot;i ist  733&quot;
+[1] &quot;i ist  734&quot;
+[1] &quot;i ist  735&quot;
+[1] &quot;i ist  736&quot;
+[1] &quot;i ist  737&quot;
+[1] &quot;i ist  738&quot;
+[1] &quot;i ist  739&quot;
+[1] &quot;i ist  740&quot;
+[1] &quot;i ist  741&quot;
+[1] &quot;i ist  742&quot;
+[1] &quot;i ist  743&quot;
+[1] &quot;i ist  744&quot;
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="daten-verarbeiten">
+<h2>4. Daten verarbeiten<a class="headerlink" href="#daten-verarbeiten" title="Permalink to this heading">#</a></h2>
+<p>In diesem Abschnitt wird die eben gespeicherte Matrix <code class="docutils literal notranslate"><span class="pre">radarmatrix</span></code> als netcdf Datei gespeichert. Hierzu müssen die Gitterkoordinaten berechnet werden.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="o">&lt;-</span><span class="nf">ncdim_def</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span><span class="n">create_dimvar</span><span class="o">=</span><span class="bp">F</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="m">1</span><span class="o">:</span><span class="m">900</span><span class="p">)</span>
+<span class="n">y</span><span class="o">&lt;-</span><span class="nf">ncdim_def</span><span class="p">(</span><span class="s">&quot;y&quot;</span><span class="p">,</span><span class="n">create_dimvar</span><span class="o">=</span><span class="bp">F</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="m">1</span><span class="o">:</span><span class="m">1100</span><span class="p">)</span>
+
+<span class="n">timedim</span><span class="o">&lt;-</span><span class="nf">ncdim_def</span><span class="p">(</span><span class="s">&quot;time&quot;</span><span class="p">,</span><span class="s">&quot;days since 1900-01-01 00:00:00.0 -0:00&quot;</span><span class="p">,</span><span class="n">time_vector</span><span class="p">)</span>
+
+<span class="n">fillvalue</span><span class="o">&lt;-</span><span class="m">1e32</span>
+<span class="n">dlname</span> <span class="o">&lt;-</span> <span class="s">&quot;precipitation_amount&quot;</span>
+<span class="n">prec_def</span> <span class="o">&lt;-</span> <span class="nf">ncvar_def</span><span class="p">(</span><span class="s">&quot;prec&quot;</span><span class="p">,</span><span class="s">&quot;kg m-2&quot;</span><span class="p">,</span><span class="nf">list</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">timedim</span><span class="p">),</span><span class="n">fillvalue</span><span class="p">,</span><span class="n">dlname</span><span class="p">,</span><span class="n">prec</span><span class="o">=</span><span class="s">&quot;single&quot;</span><span class="p">)</span>
+
+<span class="c1"># create netCDF file and put arrays</span>
+<span class="n">ncfname</span> <span class="o">&lt;-</span> <span class="nf">paste</span><span class="p">(</span><span class="s">&quot;prec_rw_&quot;</span><span class="p">,</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="s">&quot;.nc&quot;</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+<span class="c1">#ncfname &lt;- paste(&quot;/gpfs/ahrenshsmfs02/share/data/Radardata/3reanalyse/netcdf/RWrea/prec_rw_&quot;,year_list[j],month_list[k],&quot;.nc&quot;,sep=&quot;&quot;)</span>
+<span class="n">ncout</span> <span class="o">&lt;-</span> <span class="nf">nc_create</span><span class="p">(</span><span class="n">ncfname</span><span class="p">,</span><span class="n">prec_def</span><span class="p">,</span><span class="n">force_v4</span><span class="o">=</span><span class="bp">T</span><span class="p">)</span>
+
+<span class="c1"># put variables</span>
+<span class="c1">#ncvar_put(ncout,lon_def,lon)</span>
+<span class="c1">#ncvar_put(ncout,lat_def,lat)</span>
+<span class="nf">ncvar_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="n">prec_def</span><span class="p">,</span><span class="nf">aperm</span><span class="p">(</span><span class="n">radarmatrix</span><span class="p">,</span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">3</span><span class="p">)))</span>
+
+<span class="c1"># put additional attributes into dimension and data variables</span>
+<span class="c1">#ncatt_put(ncout,&quot;lon&quot;,&quot;axis&quot;,&quot;X&quot;) #,verbose=FALSE) #,definemode=FALSE)</span>
+<span class="c1">#ncatt_put(ncout,&quot;lat&quot;,&quot;axis&quot;,&quot;Y&quot;)</span>
+<span class="nf">ncatt_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="s">&quot;time&quot;</span><span class="p">,</span><span class="s">&quot;axis&quot;</span><span class="p">,</span><span class="s">&quot;T&quot;</span><span class="p">)</span>
+
+<span class="c1"># add global attributes</span>
+<span class="nf">ncatt_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="s">&quot;title&quot;</span><span class="p">,</span><span class="s">&quot;Radar-based Precipitation Climatology for Germany&quot;</span><span class="p">)</span>
+<span class="nf">ncatt_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="s">&quot;institution&quot;</span><span class="p">,</span><span class="s">&quot;Deutscher Wetterdienst (DWD)&quot;</span><span class="p">)</span>
+<span class="nf">ncatt_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="s">&quot;source&quot;</span><span class="p">,</span><span class="s">&quot;Radar composit, Gauge-adjusted&quot;</span><span class="p">)</span>
+<span class="nf">ncatt_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="s">&quot;references&quot;</span><span class="p">,</span><span class="s">&quot;http://dx.doi.org/10.5676/DWD/RADKLIM_RW_V2017.002&quot;</span><span class="p">)</span>
+<span class="nf">ncatt_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="s">&quot;history&quot;</span><span class="p">,</span><span class="s">&quot;transformation to netcdf with procedure by Christopher Purr (University of Hamburg) 2023/01/01&quot;</span><span class="p">)</span>
+<span class="nf">ncatt_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="s">&quot;Conventions&quot;</span><span class="p">,</span><span class="s">&quot;CF-1.8&quot;</span><span class="p">)</span>
+
+<span class="c1"># close the file, writing data to disk</span>
+<span class="nf">nc_close</span><span class="p">(</span><span class="n">ncout</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">image.plot</span><span class="p">(</span><span class="nf">seq</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">900</span><span class="p">),</span><span class="nf">seq</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">1100</span><span class="p">),</span><span class="nf">t</span><span class="p">(</span><span class="n">radarmatrix</span><span class="p">[,,</span><span class="m">20</span><span class="p">]),</span><span class="n">asp</span><span class="o">=</span><span class="m">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/9adcf23753bdc810979edbe52894a89c60b9996a28795315ec2cab1dd3a68544.png" src="_images/9adcf23753bdc810979edbe52894a89c60b9996a28795315ec2cab1dd3a68544.png" />
+</div>
+</div>
+</section>
+<section id="uberprufung-der-netcdf-datei-auf-konformitat-mit-dem-cf-standard">
+<h2>Überprüfung der netcdf-Datei auf Konformität mit dem cf-Standard<a class="headerlink" href="#uberprufung-der-netcdf-datei-auf-konformitat-mit-dem-cf-standard" title="Permalink to this heading">#</a></h2>
+<p>Um zu überprüfen, ob die erstellte netcdf-Datei konform zum CF-Standard ist, kann der sogenannte “CF-Checker” benutzt werden: <a class="github reference external" href="https://github.com/cedadev/cf-checker">cedadev/cf-checker</a></p>
+<p>Dieser lässt sich beispielsweise mit dem Paketmanager conda wie folgt intallieren:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">cfchecker</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">cfchecker</span> <span class="c1"># create new env OR</span>
+<span class="n">conda</span> <span class="n">install</span> <span class="n">cfchecker</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span>             <span class="c1"># install on existing env</span>
+</pre></div>
+</div>
+<p>Anschließend kann er wie folgt ausgeführt werden:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">system</span><span class="p">(</span><span class="s">&quot;cfchecks prec_rw_0101.nc&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="weitere-materialien">
+<h2>Weitere Materialien<a class="headerlink" href="#weitere-materialien" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://unidata.github.io/python-training/workshop/CF%20Conventions/netcdf-and-cf-the-basics/">https://unidata.github.io/python-training/workshop/CF Conventions/netcdf-and-cf-the-basics/</a></p></li>
+<li><p>CF-Conventions - Übersicht: <a class="reference external" href="https://cfconventions.org/">https://cfconventions.org/</a></p></li>
+<li><p>CF-Conventions - aktuelle Version: <a class="reference external" href="http://cfconventions.org/cf-conventions/cf-conventions.html">http://cfconventions.org/cf-conventions/cf-conventions.html</a></p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "r"
+        },
+        kernelOptions: {
+            name: "ir",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'ir'</script>
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lernziele">Lernziele</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einleitung">Einleitung</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#packages">Packages</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#daten-herunterladen">1. Daten herunterladen</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dateien-entpacken">2. Dateien entpacken</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#daten-einlesen">3. Daten einlesen</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ascii-teil">3.1. ASCII-Teil</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#daten-verarbeiten">4. Daten verarbeiten</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#uberprufung-der-netcdf-datei-auf-konformitat-mit-dem-cf-standard">Überprüfung der netcdf-Datei auf Konformität mit dem cf-Standard</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#weitere-materialien">Weitere Materialien</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Christopher Purr, Remon Sadikni (ICDC, NFDI4Earth, Uni Hamburg)
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

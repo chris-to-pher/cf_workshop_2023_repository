@@ -1,0 +1,806 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>The netCDF data format &#8212; How to create publishable netcdf-data</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'netcdf_format';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The NetCDF Climate and Forecast (CF) Metadata Conventions" href="cf-conventions.html" />
+    <link rel="prev" title="Introduction" href="intro.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">How to create publishable netcdf-data</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Introduction
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">The netCDF data format</a></li>
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="cf-conventions.html">The NetCDF Climate and Forecast (CF) Metadata Conventions</a></li>
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="xarray_create_netcdf.html">Handling netcdf data with Xarray</a></li>
+<li class="toctree-l1"><a class="reference internal" href="radklim_conversion.html">Creating cf-compliant netCDF files in R</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nco.html">Manipulating attributes and variable names with NCO</a></li>
+
+
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2Fnetcdf_format.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/netcdf_format.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>The netCDF data format</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">The netCDF data format</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#netcdf-content-structure">netCDF content structure</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#netcdf-content-excerpt">netCDF content excerpt</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dimensions">dimensions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variables">variables</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lat-lon">lat, lon</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#time">time</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#air">air</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#global-attributes">global attributes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data">data</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#netcdf-command-line-tool-ncdump">netCDF command line tool ncdump</a></li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="the-netcdf-data-format">
+<h1>The netCDF data format<a class="headerlink" href="#the-netcdf-data-format" title="Permalink to this heading">#</a></h1>
+<ul class="simple">
+<li><p>Unidata’s Network Common Data Form (netCDF) is a set of software libraries and machine-independent data formats that support the creation, access, and sharing of array-oriented scientific data</p></li>
+<li><p>documentation: <a class="reference external" href="https://www.unidata.ucar.edu/software/netcdf/">https://www.unidata.ucar.edu/software/netcdf/</a></p></li>
+<li><p>that is a standard for geoscientific array oriented data that data centers accept.</p></li>
+</ul>
+<p>Why do we need netCDF?</p>
+<ul class="simple">
+<li><p><strong>Self-Describing</strong>: netCDF file includes information about the data it contains.</p></li>
+<li><p><strong>Portable</strong>: A netCDF file can be accessed by computers with different ways of storing integers, characters, and floating-point numbers.</p></li>
+<li><p><strong>Scalable</strong>: A small subset of a large dataset may be accessed efficiently.</p></li>
+<li><p><strong>Appendable</strong>: Data may be appended to a properly structured netCDF file without copying the dataset or redefining its structure.</p></li>
+<li><p><strong>Sharable</strong>: One writer and multiple readers may simultaneously access the same netCDF file.</p></li>
+<li><p><strong>Archivable</strong>: Access to all earlier forms of netCDF data will be supported by current and future versions of the software.</p></li>
+</ul>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="example">
+<h1>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h1>
+<ul class="simple">
+<li><p>NCEP Reanalysis 1 <a class="reference external" href="https://www.cen.uni-hamburg.de/en/icdc/data/atmosphere/reanalysis-atmosphere/ncep.html">more information about this data set at ICDC</a></p></li>
+<li><p>monthly mean air temperature from Jan 1948 until now on a regular rectangular grid with 1.875° resolution</p></li>
+</ul>
+<p><img alt="image.png" src="attachment:image.png" /></p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="netcdf-content-structure">
+<h1>netCDF content structure<a class="headerlink" href="#netcdf-content-structure" title="Permalink to this heading">#</a></h1>
+<ul class="simple">
+<li><p>header with meta information (dimensions, variables, global attributes)</p></li>
+<li><p>each variable has attributes such as units, standard_name, etc.</p></li>
+<li><p>the data show up after the keyword “data:”</p></li>
+</ul>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="netcdf-content-excerpt">
+<h1>netCDF content excerpt<a class="headerlink" href="#netcdf-content-excerpt" title="Permalink to this heading">#</a></h1>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>netcdf air2m.mon.mean {
+dimensions:
+        lat = 94 ;
+        lon = 192 ;
+        time = UNLIMITED ; // (794 currently)
+variables:
+        float lat(lat) ;
+                lat:units = &quot;degrees_north&quot; ;
+                lat:actual_range = 88.542f, -88.542f ;
+                lat:long_name = &quot;Latitude&quot; ;
+                lat:standard_name = &quot;latitude&quot; ;
+                lat:axis = &quot;Y&quot; ;
+        float lon(lon) ;
+                lon:units = &quot;degrees_east&quot; ;
+                lon:long_name = &quot;Longitude&quot; ;
+                lon:actual_range = 0.f, 358.125f ;
+                lon:standard_name = &quot;longitude&quot; ;
+                lon:axis = &quot;X&quot; ;
+        double time(time) ;
+                time:units = &quot;hours since 1-1-1 00:00:0.0&quot; ;
+                time:long_name = &quot;Time&quot; ;
+                time:actual_range = 17067072., 17646384. ;
+                time:delta_t = &quot;0000-01-00 00:00:00&quot; ;
+                time:avg_period = &quot;0017-00-00 00:00:00&quot; ;
+                time:prev_avg_period = &quot;0000-00-01 00:00:00&quot; ;
+                time:standard_name = &quot;time&quot; ;
+                time:axis = &quot;T&quot; ;
+...
+
+        float air(time, lat, lon) ;
+                air:long_name = &quot;Monthly Mean of Air Temperature&quot; ;
+                air:valid_range = 150.f, 400.f ;
+                air:actual_range = 187.4545f, 313.3023f ;
+                air:units = &quot;degK&quot; ;
+                air:add_offset = 0.f ;
+                air:scale_factor = 1.f ;
+                air:missing_value = -9.96921e+36f ;
+                air:precision = 2s ;
+                air:least_significant_digit = 1s ;
+                air:GRIB_id = 11s ;
+                air:GRIB_name = &quot;TMP&quot; ;
+                air:var_desc = &quot;Air temperature&quot; ;
+                air:dataset = &quot;CDC Derived NCEP Reanalysis Products&quot; ;
+                air:level_desc = &quot;2 m&quot; ;
+                air:statistic = &quot;Mean&quot; ;
+                air:parent_stat = &quot;Individual Obs&quot; ;
+
+// global attributes:
+                :Conventions = &quot;COARDS&quot; ;
+                :title = &quot;mean daily NMC reanalysis (1958)&quot; ;
+                :history = &quot;created 97/10/04 by Hoop (netCDF2.3)&quot; ;
+                :description = &quot;Data is from NMC initialized reanalysis\n&quot;,
+                        &quot;(4x/day).  It consists of T62 variables interpolated to\n&quot;,
+                        &quot;pressure surfaces from model (sigma) surfaces.&quot; ;
+                :platform = &quot;Model&quot; ;            
+data:
+
+lat = 88.542, 86.6531, 84.7532, 82.8508, 80.9473, 79.0435, 77.1394, 75.2351, 
+    73.3307, 71.4262, 69.5217, 67.6171, 65.7125, 63.8079, 61.9033, ..., -88.542 ;
+
+lon = 0, 1.875, 3.75, 5.625, 7.5, 9.375, 11.25, 13.125, 15, 16.875, 18.75, 
+    20.625, 22.5, 24.375, 26.25, 28.125, 30, 31.875, 33.75, 35.625, ..., 358.125 ;
+
+time = 1297320, 1298064, 1298760, 1299504, 1300224, 1300968, 1301688, 
+    1302432, 1303176, 1303896, 1304640, 1305360, 1306104, 1306848, ..., 1900728 ;
+
+ air =
+  234.9819, 234.9284, 234.839, 234.7136, 234.6222, 234.5371, 234.4368, 
+    234.3535, 234.279, 234.2307, 234.18, 234.13, 234.0648, 234.0387,..., 
+    245.1625 ;
+}
+</pre></div>
+</div>
+<section id="dimensions">
+<h2>dimensions<a class="headerlink" href="#dimensions" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>In our example we have 3 dimensions <strong>lat, lon, time</strong></p></li>
+<li><p>Here we only define the number of elements each dimension has.</p></li>
+<li><p>In the variables part we define the units and the actual values of these coordinates</p></li>
+</ul>
+</section>
+<section id="variables">
+<h2>variables<a class="headerlink" href="#variables" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>In our example we define variables for <strong>lat, lon, time</strong></p></li>
+<li><p>And, we have the main variable <strong>air</strong> containing the 3D field of air temperature values.</p></li>
+<li><p>You can see on which dimensions these variables depend in the <strong>brackets</strong> behind the variable name.</p>
+<ul>
+<li><p>e.g. for the variable lat only depends on the dimension lat</p></li>
+<li><p>the variable air depends on time, lat, lon</p></li>
+</ul>
+</li>
+<li><p>Each variable has <strong>attributes</strong> such as units, and standard_name, so that you get meta information about the content</p></li>
+</ul>
+<section id="lat-lon">
+<h3>lat, lon<a class="headerlink" href="#lat-lon" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>At first we look at the spatial variable lat, which has the data type float:</p>
+<ul>
+<li><p>The main attributes (the names after the colon) are</p>
+<ul>
+<li><p><strong>units</strong>, in this case <strong>“degrees_north”</strong></p></li>
+<li><p><strong>standard_name</strong>: a <strong>standardized name</strong>, in this case <strong>“latitude”</strong></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">float lat(lat) ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">lat:units = &quot;degrees_north&quot; ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">lat:actual_range = 88.542f, -88.542f ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">lat:long_name = &quot;Latitude&quot; ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">lat:standard_name = &quot;latitude&quot; ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">lat:axis = &quot;Y&quot; ;</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="time">
+<h3>time<a class="headerlink" href="#time" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Then, we look at the temporal variable time with data type double:</p>
+<ul>
+<li><p>The main attributes are again</p>
+<ul>
+<li><p><strong>units</strong>, which show here a specific format:</p>
+<ul>
+<li><p>it is always a <strong>temporal interval since a certan time origin</strong>, in this case hours since Jan 1, year 1</p></li>
+</ul>
+</li>
+<li><p><strong>standard_name</strong>: in this case <strong>“time”</strong></p></li>
+<li><p>you can specify more attributes like in this case, but they are not as important.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">         </span><span class="l l-Scalar l-Scalar-Plain">double time(time) ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">time:units = &quot;hours since 1-1-1 00:00:0.0&quot; ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">time:long_name = &quot;Time&quot; ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">time:actual_range = 17067072., 17646384. ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">time:delta_t = &quot;0000-01-00 00:00:00&quot; ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">time:avg_period = &quot;0017-00-00 00:00:00&quot; ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">time:prev_avg_period = &quot;0000-00-01 00:00:00&quot; ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">time:standard_name = &quot;time&quot; ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">time:axis = &quot;T&quot; ;</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="air">
+<h3>air<a class="headerlink" href="#air" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Now, the most important variable containing the 3D field of air temperature values</p>
+<ul>
+<li><p>Here are some more important attributes:</p>
+<ul>
+<li><p><strong>units</strong>, in this case <strong>“degK”</strong> meaning degrees Kelvin</p></li>
+<li><p>there is no standard_name, but a <strong>long_name</strong> showing the type of content: <strong>“Monthly Mean of Air Temperature”</strong></p></li>
+<li><p>and there is an additional main attribute called <strong>missing_value</strong>: everywhere in the 3D field where are no values, they used the missing_value <strong>-9.96921e+36f</strong></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">float air(time, lat, lon) ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">air:long_name = &quot;Monthly Mean of Air Temperature&quot; ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">air:valid_range = 150.f, 400.f ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">air:actual_range = 187.4545f, 313.3023f ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">air:units = &quot;degK&quot; ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">air:add_offset = 0.f ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">air:scale_factor = 1.f ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">air:missing_value = -9.96921e+36f ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">air:precision = 2s ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">air:least_significant_digit = 1s ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">air:GRIB_id = 11s ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">air:GRIB_name = &quot;TMP&quot; ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">air:var_desc = &quot;Air temperature&quot; ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">air:dataset = &quot;CDC Derived NCEP Reanalysis Products&quot; ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">air:level_desc = &quot;2 m&quot; ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">air:statistic = &quot;Mean&quot; ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">air:parent_stat = &quot;Individual Obs&quot; ;</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="global-attributes">
+<h2>global attributes<a class="headerlink" href="#global-attributes" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>At the end of the header, we can specify global attributes describing <strong>meta data for the entire data set</strong></p></li>
+<li><p>such as a description, a title, contact persons, website, references, etc.</p></li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="nt">// global attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">:Conventions = &quot;COARDS&quot; ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">:title = &quot;mean daily NMC reanalysis (1958)&quot; ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">:history = &quot;created 97/10/04 by Hoop (netCDF2.3)&quot; ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">:description = &quot;Data is from NMC initialized reanalysis\n&quot;,</span><span class="w"></span>
+<span class="w">                        </span><span class="l l-Scalar l-Scalar-Plain">&quot;(4x/day).  It consists of T62 variables interpolated to\n&quot;,</span><span class="w"></span>
+<span class="w">                        </span><span class="l l-Scalar l-Scalar-Plain">&quot;pressure surfaces from model (sigma) surfaces.&quot; ;</span><span class="w"></span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">:platform = &quot;Model&quot; ;</span><span class="w"> </span>
+<span class="w"> </span>
+</pre></div>
+</div>
+</section>
+<section id="data">
+<h2>data<a class="headerlink" href="#data" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>After the header containing meta data, the <strong>actual data values</strong> follow after the <strong>keyword “data:”</strong></p></li>
+<li><p>Here you can see an excerpt of the values for lat, lon, time, and air</p></li>
+<li><p>Looking at the values of the time variable, you can see the amount of hours since the year 1.</p></li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="nt">data</span><span class="p">:</span><span class="w"></span>
+
+<span class="l l-Scalar l-Scalar-Plain">lat = 88.542, 86.6531, 84.7532, 82.8508, 80.9473, 79.0435, 77.1394, 75.2351,</span><span class="w"> </span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">73.3307, 71.4262, 69.5217, 67.6171, 65.7125, 63.8079, 61.9033, ..., -88.542 ;</span><span class="w"></span>
+
+<span class="l l-Scalar l-Scalar-Plain">lon = 0, 1.875, 3.75, 5.625, 7.5, 9.375, 11.25, 13.125, 15, 16.875, 18.75,</span><span class="w"> </span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">20.625, 22.5, 24.375, 26.25, 28.125, 30, 31.875, 33.75, 35.625, ..., 358.125 ;</span><span class="w"></span>
+
+<span class="l l-Scalar l-Scalar-Plain">time = 1297320, 1298064, 1298760, 1299504, 1300224, 1300968, 1301688,</span><span class="w"> </span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">1302432, 1303176, 1303896, 1304640, 1305360, 1306104, 1306848, ..., 1900728 ;</span><span class="w"></span>
+
+<span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">air =</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">234.9819, 234.9284, 234.839, 234.7136, 234.6222, 234.5371, 234.4368,</span><span class="w"> </span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">234.3535, 234.279, 234.2307, 234.18, 234.13, 234.0648, 234.0387,...,</span><span class="w"> </span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">245.1625 ;</span><span class="w"></span>
+<span class="l l-Scalar l-Scalar-Plain">}</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="netcdf-command-line-tool-ncdump">
+<h1>netCDF command line tool ncdump<a class="headerlink" href="#netcdf-command-line-tool-ncdump" title="Permalink to this heading">#</a></h1>
+<ul class="simple">
+<li><p>ncdump</p>
+<ul>
+<li><p>for getting the ASCII output of the binary content</p></li>
+<li><p>ncdump -h <a class="reference external" href="http://filename.nc">filename.nc</a> (show only header)</p></li>
+<li><p>ncdump <a class="reference external" href="http://filename.nc">filename.nc</a> (show entire file, that’s how I created the example above)</p></li>
+<li><p>documentation: <a class="reference external" href="https://docs.unidata.ucar.edu/nug/current/netcdf_utilities_guide.html">https://docs.unidata.ucar.edu/nug/current/netcdf_utilities_guide.html</a></p></li>
+</ul>
+</li>
+</ul>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="intro.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Introduction</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="cf-conventions.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">The NetCDF Climate and Forecast (CF) Metadata Conventions</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">The netCDF data format</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#netcdf-content-structure">netCDF content structure</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#netcdf-content-excerpt">netCDF content excerpt</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dimensions">dimensions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variables">variables</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lat-lon">lat, lon</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#time">time</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#air">air</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#global-attributes">global attributes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data">data</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#netcdf-command-line-tool-ncdump">netCDF command line tool ncdump</a></li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Christopher Purr, Remon Sadikni (ICDC, NFDI4Earth, Uni Hamburg)
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

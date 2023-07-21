@@ -1,0 +1,2355 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Creating cf-compliant netCDF files in python using a radar-based precipitation data set as example &#8212; How to create publishable netcdf-data</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'radklim_conversion_python';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">How to create publishable netcdf-data</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Introduction
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="netcdf_format.html">The netCDF data format</a></li>
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="cf-conventions.html">The NetCDF Climate and Forecast (CF) Metadata Conventions</a></li>
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="xarray_create_netcdf.html">Handling netcdf data with Xarray</a></li>
+<li class="toctree-l1"><a class="reference internal" href="radklim_conversion.html">Creating cf-compliant netCDF files in R</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nco.html">Manipulating attributes and variable names with NCO</a></li>
+
+
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2Fradklim_conversion_python.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/radklim_conversion_python.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Creating cf-compliant netCDF files in python using a radar-based precipitation data set as example</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Creating cf-compliant netCDF files in python using a radar-based precipitation data set as example</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#learning-objectives">Learning Objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction">Introduction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#libraries">Libraries</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-the-data">1. Download the data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#untar-the-data">2. Untar the data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#read-the-data">3. Read the data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ascii-header">3.1. ASCII-header</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data-binary-part">3.2. Data (binary) part</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#process-data">4. Process data</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculation-of-grid-coordinates">4.2 Calculation of grid coordinates</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#checking-if-the-netcdf-file-conforms-to-the-cf-standard">5. Checking if the netcdf-file conforms to the cf-Standard</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-material">Further material</a></li>
+</ul>
+</li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <p><a id="top"></a></p>
+<section class="tex2jax_ignore mathjax_ignore" id="creating-cf-compliant-netcdf-files-in-python-using-a-radar-based-precipitation-data-set-as-example">
+<h1>Creating cf-compliant netCDF files in python using a radar-based precipitation data set as example<a class="headerlink" href="#creating-cf-compliant-netcdf-files-in-python-using-a-radar-based-precipitation-data-set-as-example" title="Permalink to this heading">#</a></h1>
+<hr class="docutils" />
+<section id="learning-objectives">
+<h2>Learning Objectives<a class="headerlink" href="#learning-objectives" title="Permalink to this heading">#</a></h2>
+<p>At the end of this tutorial, learners will be able to:</p>
+<ul class="simple">
+<li><p>read binary data in python</p></li>
+<li><p>explain the netCDF data format and the “Climate and Forecast (CF)” meta data standard</p></li>
+<li><p>write netCDF data in python</p></li>
+</ul>
+<p>As an example we will use precipitation data from a gauge-adjusted radardataset of Deutscher Wetterdienst (DWD).</p>
+</section>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h2>
+<p>The “radar climatology” of Deutscher Wetterdienst (DWD) contains precipitation measurements based on radardata which have been quality-controlled and adjusted. It offers continuous observations of precipitation in space and time with a spatial resolution of 1 km * 1km and a temporal resolution of 1 h (the so-called RW-product) or 5 min (YW-product). The access to the dataset and further information are available here:
+DOI:<em>10.5676/DWD/RADKLIM_RW_V2017.002</em></p>
+<p>The data is available in a binary format which will be converted to the netCDF format in this tutorial.</p>
+</section>
+<section id="libraries">
+<h2>Libraries<a class="headerlink" href="#libraries" title="Permalink to this heading">#</a></h2>
+<p>The following python libraries are required:</p>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>xarray</p></li>
+<li><p>pandas</p></li>
+<li><p>matplotlib</p></li>
+<li><p>datetime</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">math</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="download-the-data">
+<h2>1. Download the data<a class="headerlink" href="#download-the-data" title="Permalink to this heading">#</a></h2>
+<p>We start by downloading the data from the opendata-Server of Deutscher Wetterdienst.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>mkdir ./data
+<span class="o">!</span>wget https://opendata.dwd.de/climate_environment/CDC/grids_germany/hourly/radolan/reproc/2017_002/bin/2001/RW2017.002_200101.tar.gz
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mkdir: das Verzeichnis „./data“ kann nicht angelegt werden: Die Datei existiert bereits
+--2023-07-18 17:16:01--  https://opendata.dwd.de/climate_environment/CDC/grids_germany/hourly/radolan/reproc/2017_002/bin/2001/RW2017.002_200101.tar.gz
+Auflösen des Hostnamens opendata.dwd.de (opendata.dwd.de)… 141.38.2.22, 141.38.2.26
+Verbindungsaufbau zu opendata.dwd.de (opendata.dwd.de)|141.38.2.22|:443 … verbunden.
+HTTP-Anforderung gesendet, auf Antwort wird gewartet … 200 OK
+Länge: 26337160 (25M) [application/octet-stream]
+Wird in »RW2017.002_200101.tar.gz.11« gespeichert.
+
+RW2017.002_200101.t 100%[===================&gt;]  25,12M  23,4MB/s    in 1,1s    
+
+2023-07-18 17:16:02 (23,4 MB/s) - »RW2017.002_200101.tar.gz.11« gespeichert [26337160/26337160]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="untar-the-data">
+<h2>2. Untar the data<a class="headerlink" href="#untar-the-data" title="Permalink to this heading">#</a></h2>
+<p>The data is stored as monthly tar-archives. By untaring the data, files will be created which adhere to the following naming convention:
+<code class="docutils literal notranslate"><span class="pre">raa01-rw2017.002_10000-************-dwd---bin</span></code>
+where <code class="docutils literal notranslate"><span class="pre">*</span></code> serves as wildcard to denote the time and date of the data in the format <code class="docutils literal notranslate"><span class="pre">YYMMDDHHMM</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>tar -xvf RW2017.002_200101.tar.gz -C data
+<span class="o">!</span>ls -l data/
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>raa01-rw2017.002_10000-0101312250-dwd---bin
+raa01-rw2017.002_10000-0101312350-dwd---bin
+raa01-rw2017.002_10000-0101312150-dwd---bin
+raa01-rw2017.002_10000-0101312050-dwd---bin
+raa01-rw2017.002_10000-0101311950-dwd---bin
+raa01-rw2017.002_10000-0101311850-dwd---bin
+raa01-rw2017.002_10000-0101311750-dwd---bin
+raa01-rw2017.002_10000-0101311650-dwd---bin
+raa01-rw2017.002_10000-0101311550-dwd---bin
+raa01-rw2017.002_10000-0101311450-dwd---bin
+raa01-rw2017.002_10000-0101311350-dwd---bin
+raa01-rw2017.002_10000-0101311250-dwd---bin
+raa01-rw2017.002_10000-0101311150-dwd---bin
+raa01-rw2017.002_10000-0101311050-dwd---bin
+raa01-rw2017.002_10000-0101310950-dwd---bin
+raa01-rw2017.002_10000-0101310750-dwd---bin
+raa01-rw2017.002_10000-0101310850-dwd---bin
+raa01-rw2017.002_10000-0101310450-dwd---bin
+raa01-rw2017.002_10000-0101310650-dwd---bin
+raa01-rw2017.002_10000-0101310550-dwd---bin
+raa01-rw2017.002_10000-0101310350-dwd---bin
+raa01-rw2017.002_10000-0101310250-dwd---bin
+raa01-rw2017.002_10000-0101310150-dwd---bin
+raa01-rw2017.002_10000-0101310050-dwd---bin
+raa01-rw2017.002_10000-0101302350-dwd---bin
+raa01-rw2017.002_10000-0101302250-dwd---bin
+raa01-rw2017.002_10000-0101302150-dwd---bin
+raa01-rw2017.002_10000-0101302050-dwd---bin
+raa01-rw2017.002_10000-0101301950-dwd---bin
+raa01-rw2017.002_10000-0101301850-dwd---bin
+raa01-rw2017.002_10000-0101301750-dwd---bin
+raa01-rw2017.002_10000-0101301450-dwd---bin
+raa01-rw2017.002_10000-0101301550-dwd---bin
+raa01-rw2017.002_10000-0101301350-dwd---bin
+raa01-rw2017.002_10000-0101301650-dwd---bin
+raa01-rw2017.002_10000-0101301150-dwd---bin
+raa01-rw2017.002_10000-0101301250-dwd---bin
+raa01-rw2017.002_10000-0101300950-dwd---bin
+raa01-rw2017.002_10000-0101301050-dwd---bin
+raa01-rw2017.002_10000-0101300850-dwd---bin
+raa01-rw2017.002_10000-0101300750-dwd---bin
+raa01-rw2017.002_10000-0101300650-dwd---bin
+raa01-rw2017.002_10000-0101300450-dwd---bin
+raa01-rw2017.002_10000-0101300250-dwd---bin
+raa01-rw2017.002_10000-0101300350-dwd---bin
+raa01-rw2017.002_10000-0101300150-dwd---bin
+raa01-rw2017.002_10000-0101300550-dwd---bin
+raa01-rw2017.002_10000-0101300050-dwd---bin
+raa01-rw2017.002_10000-0101292350-dwd---bin
+raa01-rw2017.002_10000-0101292250-dwd---bin
+raa01-rw2017.002_10000-0101292050-dwd---bin
+raa01-rw2017.002_10000-0101292150-dwd---bin
+raa01-rw2017.002_10000-0101291850-dwd---bin
+raa01-rw2017.002_10000-0101291950-dwd---bin
+raa01-rw2017.002_10000-0101291750-dwd---bin
+raa01-rw2017.002_10000-0101291650-dwd---bin
+raa01-rw2017.002_10000-0101291550-dwd---bin
+raa01-rw2017.002_10000-0101291450-dwd---bin
+raa01-rw2017.002_10000-0101291350-dwd---bin
+raa01-rw2017.002_10000-0101291250-dwd---bin
+raa01-rw2017.002_10000-0101291150-dwd---bin
+raa01-rw2017.002_10000-0101291050-dwd---bin
+raa01-rw2017.002_10000-0101290850-dwd---bin
+raa01-rw2017.002_10000-0101290750-dwd---bin
+raa01-rw2017.002_10000-0101290650-dwd---bin
+raa01-rw2017.002_10000-0101290550-dwd---bin
+raa01-rw2017.002_10000-0101290450-dwd---bin
+raa01-rw2017.002_10000-0101290350-dwd---bin
+raa01-rw2017.002_10000-0101290950-dwd---bin
+raa01-rw2017.002_10000-0101290250-dwd---bin
+raa01-rw2017.002_10000-0101290150-dwd---bin
+raa01-rw2017.002_10000-0101290050-dwd---bin
+raa01-rw2017.002_10000-0101282350-dwd---bin
+raa01-rw2017.002_10000-0101282250-dwd---bin
+raa01-rw2017.002_10000-0101282150-dwd---bin
+raa01-rw2017.002_10000-0101282050-dwd---bin
+raa01-rw2017.002_10000-0101281950-dwd---bin
+raa01-rw2017.002_10000-0101281850-dwd---bin
+raa01-rw2017.002_10000-0101281750-dwd---bin
+raa01-rw2017.002_10000-0101281650-dwd---bin
+raa01-rw2017.002_10000-0101281450-dwd---bin
+raa01-rw2017.002_10000-0101281550-dwd---bin
+raa01-rw2017.002_10000-0101281250-dwd---bin
+raa01-rw2017.002_10000-0101281150-dwd---bin
+raa01-rw2017.002_10000-0101281350-dwd---bin
+raa01-rw2017.002_10000-0101281050-dwd---bin
+raa01-rw2017.002_10000-0101280950-dwd---bin
+raa01-rw2017.002_10000-0101280850-dwd---bin
+raa01-rw2017.002_10000-0101280750-dwd---bin
+raa01-rw2017.002_10000-0101280550-dwd---bin
+raa01-rw2017.002_10000-0101280650-dwd---bin
+raa01-rw2017.002_10000-0101280450-dwd---bin
+raa01-rw2017.002_10000-0101280350-dwd---bin
+raa01-rw2017.002_10000-0101280250-dwd---bin
+raa01-rw2017.002_10000-0101280150-dwd---bin
+raa01-rw2017.002_10000-0101280050-dwd---bin
+raa01-rw2017.002_10000-0101272350-dwd---bin
+raa01-rw2017.002_10000-0101272250-dwd---bin
+raa01-rw2017.002_10000-0101272050-dwd---bin
+raa01-rw2017.002_10000-0101272150-dwd---bin
+raa01-rw2017.002_10000-0101271950-dwd---bin
+raa01-rw2017.002_10000-0101271850-dwd---bin
+raa01-rw2017.002_10000-0101271750-dwd---bin
+raa01-rw2017.002_10000-0101271650-dwd---bin
+raa01-rw2017.002_10000-0101271550-dwd---bin
+raa01-rw2017.002_10000-0101271450-dwd---bin
+raa01-rw2017.002_10000-0101271350-dwd---bin
+raa01-rw2017.002_10000-0101271250-dwd---bin
+raa01-rw2017.002_10000-0101271150-dwd---bin
+raa01-rw2017.002_10000-0101270950-dwd---bin
+raa01-rw2017.002_10000-0101271050-dwd---bin
+raa01-rw2017.002_10000-0101270850-dwd---bin
+raa01-rw2017.002_10000-0101270750-dwd---bin
+raa01-rw2017.002_10000-0101270650-dwd---bin
+raa01-rw2017.002_10000-0101270550-dwd---bin
+raa01-rw2017.002_10000-0101270450-dwd---bin
+raa01-rw2017.002_10000-0101270350-dwd---bin
+raa01-rw2017.002_10000-0101270250-dwd---bin
+raa01-rw2017.002_10000-0101270150-dwd---bin
+raa01-rw2017.002_10000-0101270050-dwd---bin
+raa01-rw2017.002_10000-0101262250-dwd---bin
+raa01-rw2017.002_10000-0101262150-dwd---bin
+raa01-rw2017.002_10000-0101262350-dwd---bin
+raa01-rw2017.002_10000-0101261950-dwd---bin
+raa01-rw2017.002_10000-0101262050-dwd---bin
+raa01-rw2017.002_10000-0101261850-dwd---bin
+raa01-rw2017.002_10000-0101261750-dwd---bin
+raa01-rw2017.002_10000-0101261650-dwd---bin
+raa01-rw2017.002_10000-0101261450-dwd---bin
+raa01-rw2017.002_10000-0101261550-dwd---bin
+raa01-rw2017.002_10000-0101261250-dwd---bin
+raa01-rw2017.002_10000-0101261150-dwd---bin
+raa01-rw2017.002_10000-0101261350-dwd---bin
+raa01-rw2017.002_10000-0101261050-dwd---bin
+raa01-rw2017.002_10000-0101260950-dwd---bin
+raa01-rw2017.002_10000-0101260850-dwd---bin
+raa01-rw2017.002_10000-0101260750-dwd---bin
+raa01-rw2017.002_10000-0101260650-dwd---bin
+raa01-rw2017.002_10000-0101260550-dwd---bin
+raa01-rw2017.002_10000-0101260450-dwd---bin
+raa01-rw2017.002_10000-0101260350-dwd---bin
+raa01-rw2017.002_10000-0101260250-dwd---bin
+raa01-rw2017.002_10000-0101260150-dwd---bin
+raa01-rw2017.002_10000-0101260050-dwd---bin
+raa01-rw2017.002_10000-0101252350-dwd---bin
+raa01-rw2017.002_10000-0101252250-dwd---bin
+raa01-rw2017.002_10000-0101252150-dwd---bin
+raa01-rw2017.002_10000-0101252050-dwd---bin
+raa01-rw2017.002_10000-0101251950-dwd---bin
+raa01-rw2017.002_10000-0101251850-dwd---bin
+raa01-rw2017.002_10000-0101251750-dwd---bin
+raa01-rw2017.002_10000-0101251650-dwd---bin
+raa01-rw2017.002_10000-0101251550-dwd---bin
+raa01-rw2017.002_10000-0101251450-dwd---bin
+raa01-rw2017.002_10000-0101251350-dwd---bin
+raa01-rw2017.002_10000-0101251250-dwd---bin
+raa01-rw2017.002_10000-0101251050-dwd---bin
+raa01-rw2017.002_10000-0101251150-dwd---bin
+raa01-rw2017.002_10000-0101250950-dwd---bin
+raa01-rw2017.002_10000-0101250850-dwd---bin
+raa01-rw2017.002_10000-0101250750-dwd---bin
+raa01-rw2017.002_10000-0101250650-dwd---bin
+raa01-rw2017.002_10000-0101250550-dwd---bin
+raa01-rw2017.002_10000-0101250350-dwd---bin
+raa01-rw2017.002_10000-0101250450-dwd---bin
+raa01-rw2017.002_10000-0101250250-dwd---bin
+raa01-rw2017.002_10000-0101250150-dwd---bin
+raa01-rw2017.002_10000-0101250050-dwd---bin
+raa01-rw2017.002_10000-0101242350-dwd---bin
+raa01-rw2017.002_10000-0101242150-dwd---bin
+raa01-rw2017.002_10000-0101242250-dwd---bin
+raa01-rw2017.002_10000-0101242050-dwd---bin
+raa01-rw2017.002_10000-0101241950-dwd---bin
+raa01-rw2017.002_10000-0101241850-dwd---bin
+raa01-rw2017.002_10000-0101241750-dwd---bin
+raa01-rw2017.002_10000-0101241650-dwd---bin
+raa01-rw2017.002_10000-0101241550-dwd---bin
+raa01-rw2017.002_10000-0101241350-dwd---bin
+raa01-rw2017.002_10000-0101241450-dwd---bin
+raa01-rw2017.002_10000-0101241150-dwd---bin
+raa01-rw2017.002_10000-0101241250-dwd---bin
+raa01-rw2017.002_10000-0101241050-dwd---bin
+raa01-rw2017.002_10000-0101240950-dwd---bin
+raa01-rw2017.002_10000-0101240850-dwd---bin
+raa01-rw2017.002_10000-0101240750-dwd---bin
+raa01-rw2017.002_10000-0101240650-dwd---bin
+raa01-rw2017.002_10000-0101240550-dwd---bin
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>raa01-rw2017.002_10000-0101240450-dwd---bin
+raa01-rw2017.002_10000-0101240250-dwd---bin
+raa01-rw2017.002_10000-0101240350-dwd---bin
+raa01-rw2017.002_10000-0101240150-dwd---bin
+raa01-rw2017.002_10000-0101240050-dwd---bin
+raa01-rw2017.002_10000-0101232350-dwd---bin
+raa01-rw2017.002_10000-0101232250-dwd---bin
+raa01-rw2017.002_10000-0101231950-dwd---bin
+raa01-rw2017.002_10000-0101231850-dwd---bin
+raa01-rw2017.002_10000-0101232150-dwd---bin
+raa01-rw2017.002_10000-0101232050-dwd---bin
+raa01-rw2017.002_10000-0101231750-dwd---bin
+raa01-rw2017.002_10000-0101231650-dwd---bin
+raa01-rw2017.002_10000-0101231550-dwd---bin
+raa01-rw2017.002_10000-0101231450-dwd---bin
+raa01-rw2017.002_10000-0101231350-dwd---bin
+raa01-rw2017.002_10000-0101231150-dwd---bin
+raa01-rw2017.002_10000-0101231250-dwd---bin
+raa01-rw2017.002_10000-0101231050-dwd---bin
+raa01-rw2017.002_10000-0101230950-dwd---bin
+raa01-rw2017.002_10000-0101230850-dwd---bin
+raa01-rw2017.002_10000-0101230750-dwd---bin
+raa01-rw2017.002_10000-0101230650-dwd---bin
+raa01-rw2017.002_10000-0101230550-dwd---bin
+raa01-rw2017.002_10000-0101230450-dwd---bin
+raa01-rw2017.002_10000-0101230350-dwd---bin
+raa01-rw2017.002_10000-0101230250-dwd---bin
+raa01-rw2017.002_10000-0101230050-dwd---bin
+raa01-rw2017.002_10000-0101230150-dwd---bin
+raa01-rw2017.002_10000-0101222250-dwd---bin
+raa01-rw2017.002_10000-0101222350-dwd---bin
+raa01-rw2017.002_10000-0101222150-dwd---bin
+raa01-rw2017.002_10000-0101222050-dwd---bin
+raa01-rw2017.002_10000-0101221950-dwd---bin
+raa01-rw2017.002_10000-0101221850-dwd---bin
+raa01-rw2017.002_10000-0101221750-dwd---bin
+raa01-rw2017.002_10000-0101221650-dwd---bin
+raa01-rw2017.002_10000-0101221550-dwd---bin
+raa01-rw2017.002_10000-0101221450-dwd---bin
+raa01-rw2017.002_10000-0101221350-dwd---bin
+raa01-rw2017.002_10000-0101221250-dwd---bin
+raa01-rw2017.002_10000-0101221150-dwd---bin
+raa01-rw2017.002_10000-0101221050-dwd---bin
+raa01-rw2017.002_10000-0101220950-dwd---bin
+raa01-rw2017.002_10000-0101220850-dwd---bin
+raa01-rw2017.002_10000-0101220650-dwd---bin
+raa01-rw2017.002_10000-0101220550-dwd---bin
+raa01-rw2017.002_10000-0101220750-dwd---bin
+raa01-rw2017.002_10000-0101220450-dwd---bin
+raa01-rw2017.002_10000-0101220350-dwd---bin
+raa01-rw2017.002_10000-0101220250-dwd---bin
+raa01-rw2017.002_10000-0101220150-dwd---bin
+raa01-rw2017.002_10000-0101220050-dwd---bin
+raa01-rw2017.002_10000-0101212350-dwd---bin
+raa01-rw2017.002_10000-0101212250-dwd---bin
+raa01-rw2017.002_10000-0101212050-dwd---bin
+raa01-rw2017.002_10000-0101211950-dwd---bin
+raa01-rw2017.002_10000-0101211850-dwd---bin
+raa01-rw2017.002_10000-0101212150-dwd---bin
+raa01-rw2017.002_10000-0101211750-dwd---bin
+raa01-rw2017.002_10000-0101211650-dwd---bin
+raa01-rw2017.002_10000-0101211550-dwd---bin
+raa01-rw2017.002_10000-0101211450-dwd---bin
+raa01-rw2017.002_10000-0101211250-dwd---bin
+raa01-rw2017.002_10000-0101211350-dwd---bin
+raa01-rw2017.002_10000-0101211150-dwd---bin
+raa01-rw2017.002_10000-0101211050-dwd---bin
+raa01-rw2017.002_10000-0101210950-dwd---bin
+raa01-rw2017.002_10000-0101210750-dwd---bin
+raa01-rw2017.002_10000-0101210850-dwd---bin
+raa01-rw2017.002_10000-0101210650-dwd---bin
+raa01-rw2017.002_10000-0101210550-dwd---bin
+raa01-rw2017.002_10000-0101210450-dwd---bin
+raa01-rw2017.002_10000-0101210250-dwd---bin
+raa01-rw2017.002_10000-0101210350-dwd---bin
+raa01-rw2017.002_10000-0101210150-dwd---bin
+raa01-rw2017.002_10000-0101210050-dwd---bin
+raa01-rw2017.002_10000-0101202350-dwd---bin
+raa01-rw2017.002_10000-0101202250-dwd---bin
+raa01-rw2017.002_10000-0101202150-dwd---bin
+raa01-rw2017.002_10000-0101202050-dwd---bin
+raa01-rw2017.002_10000-0101201950-dwd---bin
+raa01-rw2017.002_10000-0101201850-dwd---bin
+raa01-rw2017.002_10000-0101201750-dwd---bin
+raa01-rw2017.002_10000-0101201550-dwd---bin
+raa01-rw2017.002_10000-0101201650-dwd---bin
+raa01-rw2017.002_10000-0101201450-dwd---bin
+raa01-rw2017.002_10000-0101201250-dwd---bin
+raa01-rw2017.002_10000-0101201350-dwd---bin
+raa01-rw2017.002_10000-0101201050-dwd---bin
+raa01-rw2017.002_10000-0101201150-dwd---bin
+raa01-rw2017.002_10000-0101200950-dwd---bin
+raa01-rw2017.002_10000-0101200850-dwd---bin
+raa01-rw2017.002_10000-0101200750-dwd---bin
+raa01-rw2017.002_10000-0101200650-dwd---bin
+raa01-rw2017.002_10000-0101200550-dwd---bin
+raa01-rw2017.002_10000-0101200350-dwd---bin
+raa01-rw2017.002_10000-0101200450-dwd---bin
+raa01-rw2017.002_10000-0101200250-dwd---bin
+raa01-rw2017.002_10000-0101200050-dwd---bin
+raa01-rw2017.002_10000-0101200150-dwd---bin
+raa01-rw2017.002_10000-0101192250-dwd---bin
+raa01-rw2017.002_10000-0101192350-dwd---bin
+raa01-rw2017.002_10000-0101192150-dwd---bin
+raa01-rw2017.002_10000-0101192050-dwd---bin
+raa01-rw2017.002_10000-0101191850-dwd---bin
+raa01-rw2017.002_10000-0101191950-dwd---bin
+raa01-rw2017.002_10000-0101191750-dwd---bin
+raa01-rw2017.002_10000-0101191650-dwd---bin
+raa01-rw2017.002_10000-0101191550-dwd---bin
+raa01-rw2017.002_10000-0101191450-dwd---bin
+raa01-rw2017.002_10000-0101191350-dwd---bin
+raa01-rw2017.002_10000-0101191150-dwd---bin
+raa01-rw2017.002_10000-0101191250-dwd---bin
+raa01-rw2017.002_10000-0101191050-dwd---bin
+raa01-rw2017.002_10000-0101190950-dwd---bin
+raa01-rw2017.002_10000-0101190850-dwd---bin
+raa01-rw2017.002_10000-0101190750-dwd---bin
+raa01-rw2017.002_10000-0101190650-dwd---bin
+raa01-rw2017.002_10000-0101190550-dwd---bin
+raa01-rw2017.002_10000-0101190250-dwd---bin
+raa01-rw2017.002_10000-0101190450-dwd---bin
+raa01-rw2017.002_10000-0101190350-dwd---bin
+raa01-rw2017.002_10000-0101190050-dwd---bin
+raa01-rw2017.002_10000-0101190150-dwd---bin
+raa01-rw2017.002_10000-0101182350-dwd---bin
+raa01-rw2017.002_10000-0101182250-dwd---bin
+raa01-rw2017.002_10000-0101182150-dwd---bin
+raa01-rw2017.002_10000-0101181950-dwd---bin
+raa01-rw2017.002_10000-0101181850-dwd---bin
+raa01-rw2017.002_10000-0101181750-dwd---bin
+raa01-rw2017.002_10000-0101181650-dwd---bin
+raa01-rw2017.002_10000-0101181550-dwd---bin
+raa01-rw2017.002_10000-0101182050-dwd---bin
+raa01-rw2017.002_10000-0101181450-dwd---bin
+raa01-rw2017.002_10000-0101181350-dwd---bin
+raa01-rw2017.002_10000-0101181250-dwd---bin
+raa01-rw2017.002_10000-0101181150-dwd---bin
+raa01-rw2017.002_10000-0101181050-dwd---bin
+raa01-rw2017.002_10000-0101180950-dwd---bin
+raa01-rw2017.002_10000-0101180750-dwd---bin
+raa01-rw2017.002_10000-0101180850-dwd---bin
+raa01-rw2017.002_10000-0101180650-dwd---bin
+raa01-rw2017.002_10000-0101180550-dwd---bin
+raa01-rw2017.002_10000-0101180450-dwd---bin
+raa01-rw2017.002_10000-0101180350-dwd---bin
+raa01-rw2017.002_10000-0101180250-dwd---bin
+raa01-rw2017.002_10000-0101180050-dwd---bin
+raa01-rw2017.002_10000-0101180150-dwd---bin
+raa01-rw2017.002_10000-0101172350-dwd---bin
+raa01-rw2017.002_10000-0101172250-dwd---bin
+raa01-rw2017.002_10000-0101172150-dwd---bin
+raa01-rw2017.002_10000-0101171950-dwd---bin
+raa01-rw2017.002_10000-0101171850-dwd---bin
+raa01-rw2017.002_10000-0101171750-dwd---bin
+raa01-rw2017.002_10000-0101172050-dwd---bin
+raa01-rw2017.002_10000-0101171650-dwd---bin
+raa01-rw2017.002_10000-0101171550-dwd---bin
+raa01-rw2017.002_10000-0101171450-dwd---bin
+raa01-rw2017.002_10000-0101171350-dwd---bin
+raa01-rw2017.002_10000-0101171250-dwd---bin
+raa01-rw2017.002_10000-0101171150-dwd---bin
+raa01-rw2017.002_10000-0101171050-dwd---bin
+raa01-rw2017.002_10000-0101170950-dwd---bin
+raa01-rw2017.002_10000-0101170850-dwd---bin
+raa01-rw2017.002_10000-0101170750-dwd---bin
+raa01-rw2017.002_10000-0101170650-dwd---bin
+raa01-rw2017.002_10000-0101170550-dwd---bin
+raa01-rw2017.002_10000-0101170450-dwd---bin
+raa01-rw2017.002_10000-0101170150-dwd---bin
+raa01-rw2017.002_10000-0101170350-dwd---bin
+raa01-rw2017.002_10000-0101170050-dwd---bin
+raa01-rw2017.002_10000-0101162350-dwd---bin
+raa01-rw2017.002_10000-0101162250-dwd---bin
+raa01-rw2017.002_10000-0101170250-dwd---bin
+raa01-rw2017.002_10000-0101162150-dwd---bin
+raa01-rw2017.002_10000-0101162050-dwd---bin
+raa01-rw2017.002_10000-0101161950-dwd---bin
+raa01-rw2017.002_10000-0101161850-dwd---bin
+raa01-rw2017.002_10000-0101161750-dwd---bin
+raa01-rw2017.002_10000-0101161650-dwd---bin
+raa01-rw2017.002_10000-0101161550-dwd---bin
+raa01-rw2017.002_10000-0101161450-dwd---bin
+raa01-rw2017.002_10000-0101161350-dwd---bin
+raa01-rw2017.002_10000-0101161250-dwd---bin
+raa01-rw2017.002_10000-0101161150-dwd---bin
+raa01-rw2017.002_10000-0101160950-dwd---bin
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>raa01-rw2017.002_10000-0101160850-dwd---bin
+raa01-rw2017.002_10000-0101161050-dwd---bin
+raa01-rw2017.002_10000-0101160750-dwd---bin
+raa01-rw2017.002_10000-0101160650-dwd---bin
+raa01-rw2017.002_10000-0101160550-dwd---bin
+raa01-rw2017.002_10000-0101160450-dwd---bin
+raa01-rw2017.002_10000-0101160350-dwd---bin
+raa01-rw2017.002_10000-0101160250-dwd---bin
+raa01-rw2017.002_10000-0101160150-dwd---bin
+raa01-rw2017.002_10000-0101160050-dwd---bin
+raa01-rw2017.002_10000-0101152350-dwd---bin
+raa01-rw2017.002_10000-0101152150-dwd---bin
+raa01-rw2017.002_10000-0101152250-dwd---bin
+raa01-rw2017.002_10000-0101152050-dwd---bin
+raa01-rw2017.002_10000-0101151950-dwd---bin
+raa01-rw2017.002_10000-0101151850-dwd---bin
+raa01-rw2017.002_10000-0101151750-dwd---bin
+raa01-rw2017.002_10000-0101151650-dwd---bin
+raa01-rw2017.002_10000-0101151350-dwd---bin
+raa01-rw2017.002_10000-0101151550-dwd---bin
+raa01-rw2017.002_10000-0101151450-dwd---bin
+raa01-rw2017.002_10000-0101151250-dwd---bin
+raa01-rw2017.002_10000-0101151050-dwd---bin
+raa01-rw2017.002_10000-0101150950-dwd---bin
+raa01-rw2017.002_10000-0101150850-dwd---bin
+raa01-rw2017.002_10000-0101151150-dwd---bin
+raa01-rw2017.002_10000-0101150750-dwd---bin
+raa01-rw2017.002_10000-0101150450-dwd---bin
+raa01-rw2017.002_10000-0101150650-dwd---bin
+raa01-rw2017.002_10000-0101150550-dwd---bin
+raa01-rw2017.002_10000-0101150350-dwd---bin
+raa01-rw2017.002_10000-0101150250-dwd---bin
+raa01-rw2017.002_10000-0101150150-dwd---bin
+raa01-rw2017.002_10000-0101150050-dwd---bin
+raa01-rw2017.002_10000-0101142350-dwd---bin
+raa01-rw2017.002_10000-0101142250-dwd---bin
+raa01-rw2017.002_10000-0101142150-dwd---bin
+raa01-rw2017.002_10000-0101142050-dwd---bin
+raa01-rw2017.002_10000-0101141950-dwd---bin
+raa01-rw2017.002_10000-0101141850-dwd---bin
+raa01-rw2017.002_10000-0101141750-dwd---bin
+raa01-rw2017.002_10000-0101141650-dwd---bin
+raa01-rw2017.002_10000-0101141550-dwd---bin
+raa01-rw2017.002_10000-0101141450-dwd---bin
+raa01-rw2017.002_10000-0101141250-dwd---bin
+raa01-rw2017.002_10000-0101141350-dwd---bin
+raa01-rw2017.002_10000-0101141150-dwd---bin
+raa01-rw2017.002_10000-0101140850-dwd---bin
+raa01-rw2017.002_10000-0101140950-dwd---bin
+raa01-rw2017.002_10000-0101141050-dwd---bin
+raa01-rw2017.002_10000-0101140650-dwd---bin
+raa01-rw2017.002_10000-0101140550-dwd---bin
+raa01-rw2017.002_10000-0101140450-dwd---bin
+raa01-rw2017.002_10000-0101140350-dwd---bin
+raa01-rw2017.002_10000-0101140750-dwd---bin
+raa01-rw2017.002_10000-0101140250-dwd---bin
+raa01-rw2017.002_10000-0101140150-dwd---bin
+raa01-rw2017.002_10000-0101132150-dwd---bin
+raa01-rw2017.002_10000-0101132350-dwd---bin
+raa01-rw2017.002_10000-0101132250-dwd---bin
+raa01-rw2017.002_10000-0101140050-dwd---bin
+raa01-rw2017.002_10000-0101132050-dwd---bin
+raa01-rw2017.002_10000-0101131950-dwd---bin
+raa01-rw2017.002_10000-0101131850-dwd---bin
+raa01-rw2017.002_10000-0101131750-dwd---bin
+raa01-rw2017.002_10000-0101131650-dwd---bin
+raa01-rw2017.002_10000-0101131550-dwd---bin
+raa01-rw2017.002_10000-0101131450-dwd---bin
+raa01-rw2017.002_10000-0101131350-dwd---bin
+raa01-rw2017.002_10000-0101131250-dwd---bin
+raa01-rw2017.002_10000-0101131050-dwd---bin
+raa01-rw2017.002_10000-0101131150-dwd---bin
+raa01-rw2017.002_10000-0101130850-dwd---bin
+raa01-rw2017.002_10000-0101130750-dwd---bin
+raa01-rw2017.002_10000-0101130650-dwd---bin
+raa01-rw2017.002_10000-0101130550-dwd---bin
+raa01-rw2017.002_10000-0101130450-dwd---bin
+raa01-rw2017.002_10000-0101130350-dwd---bin
+raa01-rw2017.002_10000-0101130950-dwd---bin
+raa01-rw2017.002_10000-0101122350-dwd---bin
+raa01-rw2017.002_10000-0101122250-dwd---bin
+raa01-rw2017.002_10000-0101130250-dwd---bin
+raa01-rw2017.002_10000-0101130050-dwd---bin
+raa01-rw2017.002_10000-0101122150-dwd---bin
+raa01-rw2017.002_10000-0101122050-dwd---bin
+raa01-rw2017.002_10000-0101121850-dwd---bin
+raa01-rw2017.002_10000-0101121950-dwd---bin
+raa01-rw2017.002_10000-0101130150-dwd---bin
+raa01-rw2017.002_10000-0101121650-dwd---bin
+raa01-rw2017.002_10000-0101121450-dwd---bin
+raa01-rw2017.002_10000-0101121550-dwd---bin
+raa01-rw2017.002_10000-0101121350-dwd---bin
+raa01-rw2017.002_10000-0101121150-dwd---bin
+raa01-rw2017.002_10000-0101121250-dwd---bin
+raa01-rw2017.002_10000-0101121750-dwd---bin
+raa01-rw2017.002_10000-0101121050-dwd---bin
+raa01-rw2017.002_10000-0101120750-dwd---bin
+raa01-rw2017.002_10000-0101120550-dwd---bin
+raa01-rw2017.002_10000-0101120450-dwd---bin
+raa01-rw2017.002_10000-0101120950-dwd---bin
+raa01-rw2017.002_10000-0101120350-dwd---bin
+raa01-rw2017.002_10000-0101120250-dwd---bin
+raa01-rw2017.002_10000-0101120650-dwd---bin
+raa01-rw2017.002_10000-0101120850-dwd---bin
+raa01-rw2017.002_10000-0101120150-dwd---bin
+raa01-rw2017.002_10000-0101112250-dwd---bin
+raa01-rw2017.002_10000-0101112350-dwd---bin
+raa01-rw2017.002_10000-0101112050-dwd---bin
+raa01-rw2017.002_10000-0101112150-dwd---bin
+raa01-rw2017.002_10000-0101010550-dwd---bin
+raa01-rw2017.002_10000-0101120050-dwd---bin
+raa01-rw2017.002_10000-0101111850-dwd---bin
+raa01-rw2017.002_10000-0101010350-dwd---bin
+raa01-rw2017.002_10000-0101111950-dwd---bin
+raa01-rw2017.002_10000-0101010450-dwd---bin
+raa01-rw2017.002_10000-0101111650-dwd---bin
+raa01-rw2017.002_10000-0101010250-dwd---bin
+raa01-rw2017.002_10000-0101111550-dwd---bin
+raa01-rw2017.002_10000-0101111750-dwd---bin
+raa01-rw2017.002_10000-0101010150-dwd---bin
+raa01-rw2017.002_10000-0101111450-dwd---bin
+raa01-rw2017.002_10000-0101010050-dwd---bin
+raa01-rw2017.002_10000-0101111350-dwd---bin
+raa01-rw2017.002_10000-0101111250-dwd---bin
+raa01-rw2017.002_10000-0101111150-dwd---bin
+raa01-rw2017.002_10000-0101110950-dwd---bin
+raa01-rw2017.002_10000-0101111050-dwd---bin
+raa01-rw2017.002_10000-0101110850-dwd---bin
+raa01-rw2017.002_10000-0101110750-dwd---bin
+raa01-rw2017.002_10000-0101110550-dwd---bin
+raa01-rw2017.002_10000-0101110650-dwd---bin
+raa01-rw2017.002_10000-0101110450-dwd---bin
+raa01-rw2017.002_10000-0101110350-dwd---bin
+raa01-rw2017.002_10000-0101110250-dwd---bin
+raa01-rw2017.002_10000-0101110150-dwd---bin
+raa01-rw2017.002_10000-0101110050-dwd---bin
+raa01-rw2017.002_10000-0101102350-dwd---bin
+raa01-rw2017.002_10000-0101102250-dwd---bin
+raa01-rw2017.002_10000-0101102150-dwd---bin
+raa01-rw2017.002_10000-0101102050-dwd---bin
+raa01-rw2017.002_10000-0101101950-dwd---bin
+raa01-rw2017.002_10000-0101101850-dwd---bin
+raa01-rw2017.002_10000-0101101750-dwd---bin
+raa01-rw2017.002_10000-0101101650-dwd---bin
+raa01-rw2017.002_10000-0101101450-dwd---bin
+raa01-rw2017.002_10000-0101101550-dwd---bin
+raa01-rw2017.002_10000-0101101250-dwd---bin
+raa01-rw2017.002_10000-0101101350-dwd---bin
+raa01-rw2017.002_10000-0101101150-dwd---bin
+raa01-rw2017.002_10000-0101101050-dwd---bin
+raa01-rw2017.002_10000-0101100950-dwd---bin
+raa01-rw2017.002_10000-0101100850-dwd---bin
+raa01-rw2017.002_10000-0101100750-dwd---bin
+raa01-rw2017.002_10000-0101100650-dwd---bin
+raa01-rw2017.002_10000-0101100550-dwd---bin
+raa01-rw2017.002_10000-0101100450-dwd---bin
+raa01-rw2017.002_10000-0101100250-dwd---bin
+raa01-rw2017.002_10000-0101100050-dwd---bin
+raa01-rw2017.002_10000-0101100150-dwd---bin
+raa01-rw2017.002_10000-0101092350-dwd---bin
+raa01-rw2017.002_10000-0101092250-dwd---bin
+raa01-rw2017.002_10000-0101100350-dwd---bin
+raa01-rw2017.002_10000-0101092150-dwd---bin
+raa01-rw2017.002_10000-0101091950-dwd---bin
+raa01-rw2017.002_10000-0101092050-dwd---bin
+raa01-rw2017.002_10000-0101091850-dwd---bin
+raa01-rw2017.002_10000-0101091750-dwd---bin
+raa01-rw2017.002_10000-0101091650-dwd---bin
+raa01-rw2017.002_10000-0101091550-dwd---bin
+raa01-rw2017.002_10000-0101091450-dwd---bin
+raa01-rw2017.002_10000-0101091350-dwd---bin
+raa01-rw2017.002_10000-0101091250-dwd---bin
+raa01-rw2017.002_10000-0101091150-dwd---bin
+raa01-rw2017.002_10000-0101091050-dwd---bin
+raa01-rw2017.002_10000-0101090850-dwd---bin
+raa01-rw2017.002_10000-0101090950-dwd---bin
+raa01-rw2017.002_10000-0101090750-dwd---bin
+raa01-rw2017.002_10000-0101090550-dwd---bin
+raa01-rw2017.002_10000-0101090450-dwd---bin
+raa01-rw2017.002_10000-0101090350-dwd---bin
+raa01-rw2017.002_10000-0101090650-dwd---bin
+raa01-rw2017.002_10000-0101090250-dwd---bin
+raa01-rw2017.002_10000-0101090150-dwd---bin
+raa01-rw2017.002_10000-0101090050-dwd---bin
+raa01-rw2017.002_10000-0101082350-dwd---bin
+raa01-rw2017.002_10000-0101082250-dwd---bin
+raa01-rw2017.002_10000-0101082150-dwd---bin
+raa01-rw2017.002_10000-0101082050-dwd---bin
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>raa01-rw2017.002_10000-0101081950-dwd---bin
+raa01-rw2017.002_10000-0101081850-dwd---bin
+raa01-rw2017.002_10000-0101081750-dwd---bin
+raa01-rw2017.002_10000-0101081650-dwd---bin
+raa01-rw2017.002_10000-0101081550-dwd---bin
+raa01-rw2017.002_10000-0101081450-dwd---bin
+raa01-rw2017.002_10000-0101081350-dwd---bin
+raa01-rw2017.002_10000-0101081250-dwd---bin
+raa01-rw2017.002_10000-0101081150-dwd---bin
+raa01-rw2017.002_10000-0101081050-dwd---bin
+raa01-rw2017.002_10000-0101080850-dwd---bin
+raa01-rw2017.002_10000-0101080950-dwd---bin
+raa01-rw2017.002_10000-0101080750-dwd---bin
+raa01-rw2017.002_10000-0101080650-dwd---bin
+raa01-rw2017.002_10000-0101080550-dwd---bin
+raa01-rw2017.002_10000-0101080450-dwd---bin
+raa01-rw2017.002_10000-0101080350-dwd---bin
+raa01-rw2017.002_10000-0101080250-dwd---bin
+raa01-rw2017.002_10000-0101080150-dwd---bin
+raa01-rw2017.002_10000-0101080050-dwd---bin
+raa01-rw2017.002_10000-0101072350-dwd---bin
+raa01-rw2017.002_10000-0101072250-dwd---bin
+raa01-rw2017.002_10000-0101072150-dwd---bin
+raa01-rw2017.002_10000-0101072050-dwd---bin
+raa01-rw2017.002_10000-0101071850-dwd---bin
+raa01-rw2017.002_10000-0101071750-dwd---bin
+raa01-rw2017.002_10000-0101071950-dwd---bin
+raa01-rw2017.002_10000-0101071650-dwd---bin
+raa01-rw2017.002_10000-0101071550-dwd---bin
+raa01-rw2017.002_10000-0101071450-dwd---bin
+raa01-rw2017.002_10000-0101071350-dwd---bin
+raa01-rw2017.002_10000-0101071150-dwd---bin
+raa01-rw2017.002_10000-0101071250-dwd---bin
+raa01-rw2017.002_10000-0101070950-dwd---bin
+raa01-rw2017.002_10000-0101071050-dwd---bin
+raa01-rw2017.002_10000-0101070850-dwd---bin
+raa01-rw2017.002_10000-0101070650-dwd---bin
+raa01-rw2017.002_10000-0101070750-dwd---bin
+raa01-rw2017.002_10000-0101070450-dwd---bin
+raa01-rw2017.002_10000-0101070350-dwd---bin
+raa01-rw2017.002_10000-0101070550-dwd---bin
+raa01-rw2017.002_10000-0101070250-dwd---bin
+raa01-rw2017.002_10000-0101070050-dwd---bin
+raa01-rw2017.002_10000-0101070150-dwd---bin
+raa01-rw2017.002_10000-0101062350-dwd---bin
+raa01-rw2017.002_10000-0101062150-dwd---bin
+raa01-rw2017.002_10000-0101062250-dwd---bin
+raa01-rw2017.002_10000-0101062050-dwd---bin
+raa01-rw2017.002_10000-0101061950-dwd---bin
+raa01-rw2017.002_10000-0101061850-dwd---bin
+raa01-rw2017.002_10000-0101061750-dwd---bin
+raa01-rw2017.002_10000-0101061650-dwd---bin
+raa01-rw2017.002_10000-0101061550-dwd---bin
+raa01-rw2017.002_10000-0101061450-dwd---bin
+raa01-rw2017.002_10000-0101061350-dwd---bin
+raa01-rw2017.002_10000-0101061250-dwd---bin
+raa01-rw2017.002_10000-0101061150-dwd---bin
+raa01-rw2017.002_10000-0101061050-dwd---bin
+raa01-rw2017.002_10000-0101060950-dwd---bin
+raa01-rw2017.002_10000-0101060850-dwd---bin
+raa01-rw2017.002_10000-0101060750-dwd---bin
+raa01-rw2017.002_10000-0101060650-dwd---bin
+raa01-rw2017.002_10000-0101060550-dwd---bin
+raa01-rw2017.002_10000-0101060450-dwd---bin
+raa01-rw2017.002_10000-0101060350-dwd---bin
+raa01-rw2017.002_10000-0101060250-dwd---bin
+raa01-rw2017.002_10000-0101060150-dwd---bin
+raa01-rw2017.002_10000-0101060050-dwd---bin
+raa01-rw2017.002_10000-0101052350-dwd---bin
+raa01-rw2017.002_10000-0101052250-dwd---bin
+raa01-rw2017.002_10000-0101052150-dwd---bin
+raa01-rw2017.002_10000-0101051950-dwd---bin
+raa01-rw2017.002_10000-0101052050-dwd---bin
+raa01-rw2017.002_10000-0101051850-dwd---bin
+raa01-rw2017.002_10000-0101051750-dwd---bin
+raa01-rw2017.002_10000-0101051650-dwd---bin
+raa01-rw2017.002_10000-0101051550-dwd---bin
+raa01-rw2017.002_10000-0101051450-dwd---bin
+raa01-rw2017.002_10000-0101051350-dwd---bin
+raa01-rw2017.002_10000-0101051250-dwd---bin
+raa01-rw2017.002_10000-0101051150-dwd---bin
+raa01-rw2017.002_10000-0101051050-dwd---bin
+raa01-rw2017.002_10000-0101050950-dwd---bin
+raa01-rw2017.002_10000-0101050850-dwd---bin
+raa01-rw2017.002_10000-0101050650-dwd---bin
+raa01-rw2017.002_10000-0101050750-dwd---bin
+raa01-rw2017.002_10000-0101050550-dwd---bin
+raa01-rw2017.002_10000-0101050450-dwd---bin
+raa01-rw2017.002_10000-0101050350-dwd---bin
+raa01-rw2017.002_10000-0101050150-dwd---bin
+raa01-rw2017.002_10000-0101050050-dwd---bin
+raa01-rw2017.002_10000-0101042350-dwd---bin
+raa01-rw2017.002_10000-0101050250-dwd---bin
+raa01-rw2017.002_10000-0101042250-dwd---bin
+raa01-rw2017.002_10000-0101042150-dwd---bin
+raa01-rw2017.002_10000-0101042050-dwd---bin
+raa01-rw2017.002_10000-0101041950-dwd---bin
+raa01-rw2017.002_10000-0101041850-dwd---bin
+raa01-rw2017.002_10000-0101041750-dwd---bin
+raa01-rw2017.002_10000-0101041650-dwd---bin
+raa01-rw2017.002_10000-0101041550-dwd---bin
+raa01-rw2017.002_10000-0101041450-dwd---bin
+raa01-rw2017.002_10000-0101041350-dwd---bin
+raa01-rw2017.002_10000-0101041150-dwd---bin
+raa01-rw2017.002_10000-0101041250-dwd---bin
+raa01-rw2017.002_10000-0101041050-dwd---bin
+raa01-rw2017.002_10000-0101040850-dwd---bin
+raa01-rw2017.002_10000-0101040950-dwd---bin
+raa01-rw2017.002_10000-0101040750-dwd---bin
+raa01-rw2017.002_10000-0101040650-dwd---bin
+raa01-rw2017.002_10000-0101040550-dwd---bin
+raa01-rw2017.002_10000-0101040350-dwd---bin
+raa01-rw2017.002_10000-0101040450-dwd---bin
+raa01-rw2017.002_10000-0101040250-dwd---bin
+raa01-rw2017.002_10000-0101040150-dwd---bin
+raa01-rw2017.002_10000-0101040050-dwd---bin
+raa01-rw2017.002_10000-0101032350-dwd---bin
+raa01-rw2017.002_10000-0101032250-dwd---bin
+raa01-rw2017.002_10000-0101032150-dwd---bin
+raa01-rw2017.002_10000-0101032050-dwd---bin
+raa01-rw2017.002_10000-0101031850-dwd---bin
+raa01-rw2017.002_10000-0101031950-dwd---bin
+raa01-rw2017.002_10000-0101031750-dwd---bin
+raa01-rw2017.002_10000-0101031550-dwd---bin
+raa01-rw2017.002_10000-0101031650-dwd---bin
+raa01-rw2017.002_10000-0101031450-dwd---bin
+raa01-rw2017.002_10000-0101031150-dwd---bin
+raa01-rw2017.002_10000-0101031250-dwd---bin
+raa01-rw2017.002_10000-0101031050-dwd---bin
+raa01-rw2017.002_10000-0101030950-dwd---bin
+raa01-rw2017.002_10000-0101030850-dwd---bin
+raa01-rw2017.002_10000-0101030750-dwd---bin
+raa01-rw2017.002_10000-0101030650-dwd---bin
+raa01-rw2017.002_10000-0101030550-dwd---bin
+raa01-rw2017.002_10000-0101030350-dwd---bin
+raa01-rw2017.002_10000-0101030450-dwd---bin
+raa01-rw2017.002_10000-0101030250-dwd---bin
+raa01-rw2017.002_10000-0101031350-dwd---bin
+raa01-rw2017.002_10000-0101030050-dwd---bin
+raa01-rw2017.002_10000-0101030150-dwd---bin
+raa01-rw2017.002_10000-0101022350-dwd---bin
+raa01-rw2017.002_10000-0101022150-dwd---bin
+raa01-rw2017.002_10000-0101022250-dwd---bin
+raa01-rw2017.002_10000-0101022050-dwd---bin
+raa01-rw2017.002_10000-0101021950-dwd---bin
+raa01-rw2017.002_10000-0101021850-dwd---bin
+raa01-rw2017.002_10000-0101021750-dwd---bin
+raa01-rw2017.002_10000-0101021550-dwd---bin
+raa01-rw2017.002_10000-0101021650-dwd---bin
+raa01-rw2017.002_10000-0101021450-dwd---bin
+raa01-rw2017.002_10000-0101021350-dwd---bin
+raa01-rw2017.002_10000-0101021150-dwd---bin
+raa01-rw2017.002_10000-0101021250-dwd---bin
+raa01-rw2017.002_10000-0101021050-dwd---bin
+raa01-rw2017.002_10000-0101020950-dwd---bin
+raa01-rw2017.002_10000-0101020850-dwd---bin
+raa01-rw2017.002_10000-0101020650-dwd---bin
+raa01-rw2017.002_10000-0101020550-dwd---bin
+raa01-rw2017.002_10000-0101020450-dwd---bin
+raa01-rw2017.002_10000-0101020750-dwd---bin
+raa01-rw2017.002_10000-0101020250-dwd---bin
+raa01-rw2017.002_10000-0101020350-dwd---bin
+raa01-rw2017.002_10000-0101020150-dwd---bin
+raa01-rw2017.002_10000-0101020050-dwd---bin
+raa01-rw2017.002_10000-0101012250-dwd---bin
+raa01-rw2017.002_10000-0101012350-dwd---bin
+raa01-rw2017.002_10000-0101012150-dwd---bin
+raa01-rw2017.002_10000-0101012050-dwd---bin
+raa01-rw2017.002_10000-0101011950-dwd---bin
+raa01-rw2017.002_10000-0101011850-dwd---bin
+raa01-rw2017.002_10000-0101011750-dwd---bin
+raa01-rw2017.002_10000-0101011650-dwd---bin
+raa01-rw2017.002_10000-0101011550-dwd---bin
+raa01-rw2017.002_10000-0101011450-dwd---bin
+raa01-rw2017.002_10000-0101011350-dwd---bin
+raa01-rw2017.002_10000-0101011250-dwd---bin
+raa01-rw2017.002_10000-0101011150-dwd---bin
+raa01-rw2017.002_10000-0101011050-dwd---bin
+raa01-rw2017.002_10000-0101010950-dwd---bin
+raa01-rw2017.002_10000-0101010750-dwd---bin
+raa01-rw2017.002_10000-0101010650-dwd---bin
+raa01-rw2017.002_10000-0101010850-dwd---bin
+insgesamt 1438896
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101010050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101010150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101010250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101010350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101010450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101010550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101010650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101010750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101010850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101010950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101011050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101011150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101011250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101011350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101011450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101011550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101011650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101011750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101011850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101011950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101012050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101012150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101012250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101012350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101020050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101020150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101020250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101020350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101020450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101020550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101020650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101020750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101020850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101020950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101021050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101021150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101021250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101021350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101021450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101021550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101021650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101021750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101021850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101021950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101022050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101022150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101022250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101022350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101030050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101030150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101030250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101030350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101030450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101030550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101030650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101030750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101030850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101030950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101031050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101031150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101031250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101031350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101031450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101031550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101031650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101031750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101031850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101031950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101032050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101032150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101032250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101032350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101040050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101040150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101040250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101040350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101040450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101040550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101040650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101040750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101040850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101040950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101041050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101041150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101041250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101041350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101041450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101041550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101041650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101041750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101041850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101041950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101042050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101042150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101042250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101042350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101050050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101050150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101050250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101050350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101050450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101050550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101050650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101050750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101050850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101050950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101051050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101051150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101051250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101051350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101051450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101051550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101051650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101051750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101051850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101051950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101052050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101052150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101052250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101052350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101060050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101060150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101060250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101060350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101060450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101060550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101060650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101060750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101060850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101060950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101061050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101061150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101061250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101061350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101061450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101061550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101061650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101061750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101061850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101061950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101062050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101062150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101062250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101062350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101070050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101070150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101070250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101070350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101070450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101070550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101070650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101070750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101070850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101070950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101071050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101071150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101071250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101071350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101071450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101071550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101071650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101071750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101071850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101071950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101072050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101072150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101072250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101072350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101080050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101080150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101080250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101080350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101080450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101080550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101080650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101080750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101080850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101080950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101081050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101081150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101081250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101081350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101081450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101081550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101081650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101081750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101081850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101081950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101082050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101082150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101082250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101082350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101090050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101090150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101090250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101090350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101090450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101090550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101090650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101090750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980100 Jun 13  2018 raa01-rw2017.002_10000-0101090850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980100 Jun 13  2018 raa01-rw2017.002_10000-0101090950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101091050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101091150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101091250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101091350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101091450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101091550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101091650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101091750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101091850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101091950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101092050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101092150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101092250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101092350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101100050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101100150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101100250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101100350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101100450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101100550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101100650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101100750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101100850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101100950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101101050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101101150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101101250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101101350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101101450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101101550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101101650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101101750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101101850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101101950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101102050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101102150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101102250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101102350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101110050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101110150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101110250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101110350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101110450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101110550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101110650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101110750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101110850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101110950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101111050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101111150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101111250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101111350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101111450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101111550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101111650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101111750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101111850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101111950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101112050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101112150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101112250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101112350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101120050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101120150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101120250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101120350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101120450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101120550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101120650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101120750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101120850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101120950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101121050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101121150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101121250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101121350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101121450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101121550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101121650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101121750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101121850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101121950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101122050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101122150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101122250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101122350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101130050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101130150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101130250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101130350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101130450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101130550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101130650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101130750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101130850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101130950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101131050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101131150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101131250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101131350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101131450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101131550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101131650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101131750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101131850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101131950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101132050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101132150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101132250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101132350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101140050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101140150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101140250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101140350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101140450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101140550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101140650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101140750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101140850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101140950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101141050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101141150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101141250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101141350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101141450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101141550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101141650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101141750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101141850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101141950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101142050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101142150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101142250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101142350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101150050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101150150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101150250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101150350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101150450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101150550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101150650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101150750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101150850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101150950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101151050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101151150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101151250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101151350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101151450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101151550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101151650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101151750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101151850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101151950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101152050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101152150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101152250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101152350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101160050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101160150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101160250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101160350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101160450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101160550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101160650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101160750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101160850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980152 Jun 13  2018 raa01-rw2017.002_10000-0101160950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980152 Jun 13  2018 raa01-rw2017.002_10000-0101161050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980148 Jun 13  2018 raa01-rw2017.002_10000-0101161150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980148 Jun 13  2018 raa01-rw2017.002_10000-0101161250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980148 Jun 13  2018 raa01-rw2017.002_10000-0101161350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980148 Jun 13  2018 raa01-rw2017.002_10000-0101161450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980148 Jun 13  2018 raa01-rw2017.002_10000-0101161550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101161650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101161750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101161850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101161950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101162050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101162150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101162250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101162350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101170050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101170150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101170250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101170350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101170450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101170550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101170650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101170750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980152 Jun 13  2018 raa01-rw2017.002_10000-0101170850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101170950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980152 Jun 13  2018 raa01-rw2017.002_10000-0101171050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101171150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101171250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101171350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101171450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101171550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101171650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101171750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101171850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101171950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101172050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980152 Jun 13  2018 raa01-rw2017.002_10000-0101172150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980152 Jun 13  2018 raa01-rw2017.002_10000-0101172250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980152 Jun 13  2018 raa01-rw2017.002_10000-0101172350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980152 Jun 13  2018 raa01-rw2017.002_10000-0101180050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980152 Jun 13  2018 raa01-rw2017.002_10000-0101180150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980152 Jun 13  2018 raa01-rw2017.002_10000-0101180250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980152 Jun 13  2018 raa01-rw2017.002_10000-0101180350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980152 Jun 13  2018 raa01-rw2017.002_10000-0101180450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980152 Jun 13  2018 raa01-rw2017.002_10000-0101180550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980152 Jun 13  2018 raa01-rw2017.002_10000-0101180650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101180750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101180850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101180950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101181050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101181150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101181250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101181350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101181450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101181550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101181650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101181750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101181850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101181950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101182050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101182150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101182250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101182350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101190050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101190150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101190250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101190350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101190450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101190550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101190650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101190750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101190850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101190950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101191050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101191150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101191250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101191350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101191450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101191550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101191650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101191750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101191850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101191950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101192050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101192150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101192250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101192350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101200050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101200150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101200250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101200350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101200450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101200550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101200650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101200750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101200850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101200950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101201050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101201150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101201250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101201350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101201450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101201550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101201650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101201750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101201850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101201950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101202050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101202150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101202250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101202350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101210050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101210150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101210250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101210350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101210450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101210550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101210650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101210750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101210850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101210950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101211050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101211150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101211250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101211350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101211450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101211550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101211650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101211750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101211850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101211950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101212050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101212150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101212250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101212350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101220050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101220150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101220250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101220350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101220450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101220550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101220650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101220750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101220850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101220950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101221050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101221150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101221250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101221350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101221450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101221550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101221650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101221750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101221850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101221950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101222050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101222150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101222250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101222350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101230050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101230150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101230250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101230350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101230450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101230550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101230650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101230750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101230850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101230950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101231050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101231150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101231250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101231350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101231450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101231550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101231650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101231750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101231850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101231950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101232050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101232150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101232250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101232350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101240050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101240150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101240250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101240350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101240450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101240550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101240650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101240750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101240850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101240950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980152 Jun 13  2018 raa01-rw2017.002_10000-0101241050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980152 Jun 13  2018 raa01-rw2017.002_10000-0101241150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980148 Jun 13  2018 raa01-rw2017.002_10000-0101241250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101241350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101241450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101241550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101241650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101241750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101241850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101241950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101242050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101242150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101242250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101242350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101250050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101250150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101250250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101250350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101250450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101250550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101250650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101250750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101250850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101250950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101251050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101251150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101251250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101251350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101251450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101251550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101251650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101251750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101251850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101251950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101252050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101252150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101252250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101252350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101260050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101260150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101260250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101260350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101260450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101260550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101260650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101260750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101260850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101260950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101261050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101261150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101261250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101261350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101261450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101261550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101261650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101261750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101261850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101261950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101262050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101262150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101262250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101262350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101270050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101270150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101270250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101270350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101270450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101270550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101270650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101270750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101270850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101270950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101271050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101271150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101271250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101271350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101271450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101271550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101271650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101271750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101271850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101271950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101272050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101272150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101272250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101272350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101280050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101280150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101280250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101280350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101280450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101280550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101280650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101280750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101280850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101280950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101281050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101281150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101281250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101281350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101281450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101281550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101281650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101281750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101281850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101281950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101282050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101282150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101282250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101282350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101290050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101290150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101290250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101290350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101290450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101290550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101290650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101290750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101290850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101290950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101291050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101291150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101291250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101291350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101291450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101291550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101291650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101291750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101291850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101291950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101292050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101292150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101292250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101292350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101300050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101300150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101300250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101300350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101300450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101300550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101300650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101300750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101300850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101300950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101301050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101301150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101301250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980156 Jun 13  2018 raa01-rw2017.002_10000-0101301350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101301450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101301550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101301650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101301750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101301850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101301950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101302050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101302150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101302250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101302350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101310050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101310150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101310250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101310350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101310450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101310550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101310650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101310750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101310850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101310950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101311050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101311150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101311250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101311350-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101311450-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101311550-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101311650-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101311750-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101311850-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101311950-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101312050-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101312150-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101312250-dwd---bin
+-rw-r--r-- 1 u290401 icdc 1980160 Jun 13  2018 raa01-rw2017.002_10000-0101312350-dwd---bin
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="read-the-data">
+<h2>3. Read the data<a class="headerlink" href="#read-the-data" title="Permalink to this heading">#</a></h2>
+<p>The data are stored in the so-called <code class="docutils literal notranslate"><span class="pre">RADKLIM-Komposit</span></code> format. In this format, every file consists of an ASCII part which contains meta data and a binary part which contains the actual precipitation data. The format is described in detail in the following document:
+<a class="reference external" href="https://www.dwd.de/DE/leistungen/radarklimatologie/radklim_kompositformat_1_0.pdf">https://www.dwd.de/DE/leistungen/radarklimatologie/radklim_kompositformat_1_0.pdf</a></p>
+<section id="ascii-header">
+<h3>3.1. ASCII-header<a class="headerlink" href="#ascii-header" title="Permalink to this heading">#</a></h3>
+<p>We extract the metadata from the ASCII-header of file <code class="docutils literal notranslate"><span class="pre">raa01-rw2017.002_10000-0101010050-dwd---bin</span></code> and save it in the <code class="docutils literal notranslate"><span class="pre">ascii_header</span></code> variable.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;./data/raa01-rw2017.002_10000-0101010050-dwd---bin&quot;</span>
+<span class="n">ascii_header</span><span class="o">=</span><span class="s1">&#39;&#39;</span>    
+
+<span class="c1">#Opening and reading binary file</span>
+<span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">char</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x03</span><span class="s1">&#39;</span><span class="p">:</span>
+       <span class="k">break</span>
+    <span class="n">ascii_header</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>  
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ascii_header</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;RW010050100000101BY1980160VS 3SW   2.18.3PR E-01INT  60U0GP1100x 900MF 00000001VR2017.002MS 65&lt;ham,ros,emd,han,umd,bln,ess,fld,drs,neu,nhb,fra,eis,tur,muc,fbg&gt;&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>The metadata elements <code class="docutils literal notranslate"><span class="pre">datetime</span></code> and <code class="docutils literal notranslate"><span class="pre">dimensions</span> <span class="pre">(nrow,</span> <span class="pre">ncol)</span></code> are extracted from the ascii_header and stored in the dictionary <code class="docutils literal notranslate"><span class="pre">attrs</span></code>. Additionally, the elements <code class="docutils literal notranslate"><span class="pre">datasize</span></code> and <code class="docutils literal notranslate"><span class="pre">precision</span></code> are set:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">attrs</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">ascii_header</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span> <span class="o">+</span> <span class="n">ascii_header</span><span class="p">[</span><span class="mi">13</span><span class="p">:</span><span class="mi">17</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;00&quot;</span><span class="p">,</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">%H%M%m%y%S&quot;</span><span class="p">)</span>
+<span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;nrow&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ascii_header</span><span class="p">[</span><span class="mi">59</span><span class="p">:</span><span class="mi">63</span><span class="p">])</span>
+<span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;ncol&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ascii_header</span><span class="p">[</span><span class="mi">65</span><span class="p">:</span><span class="mi">68</span><span class="p">])</span>
+
+<span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;datasize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1980000</span>   
+<span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.1</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">attrs</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;datetime&#39;: datetime.datetime(2001, 1, 1, 0, 50),
+ &#39;nrow&#39;: 1100,
+ &#39;ncol&#39;: 900,
+ &#39;datasize&#39;: 1980000,
+ &#39;precision&#39;: 0.1}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="data-binary-part">
+<h3>3.2. Data (binary) part<a class="headerlink" href="#data-binary-part" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">NODATA</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9999</span>
+
+<span class="n">binarr</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;datasize&#39;</span><span class="p">]</span> <span class="p">)</span>
+<span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">binarr</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span>
+
+<span class="n">nodata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">arr</span> <span class="o">&gt;</span><span class="mi">1000</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+       
+<span class="c1"># Scaling Faktor zum Umrechnen der Daten in mm/h</span>
+<span class="n">arr</span> <span class="o">=</span> <span class="n">arr</span> <span class="o">*</span> <span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;precision&#39;</span><span class="p">]</span>
+<span class="c1"># Fehlwerte setzen</span>
+<span class="n">arr</span><span class="p">[</span><span class="n">nodata</span><span class="p">]</span> <span class="o">=</span> <span class="n">NODATA</span>
+
+<span class="c1"># Umwandeln von 1-dimensionalem Array in 2-dimensionales Array</span>
+<span class="n">arr</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;nrow&#39;</span><span class="p">],</span> <span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;ncol&#39;</span><span class="p">]))</span>
+
+<span class="c1">#Umwandel in Numpy </span>
+<span class="n">arr_numpy</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="n">ndmin</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="process-data">
+<h1>4. Process data<a class="headerlink" href="#process-data" title="Permalink to this heading">#</a></h1>
+<p>In this section, the just stored NumpyArray <code class="docutils literal notranslate"><span class="pre">arr_numpy</span></code> is converted to an XArray object and stored as netCDF file.</p>
+<section id="calculation-of-grid-coordinates">
+<h2>4.2 Calculation of grid coordinates<a class="headerlink" href="#calculation-of-grid-coordinates" title="Permalink to this heading">#</a></h2>
+<p>The data are stored in a polar-stereographic projection. The grid coordinates are constructed in the following way:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x_vec</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">442.962</span><span class="p">,</span><span class="mf">456.039</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">y_vec</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">4758.145</span><span class="p">,</span><span class="o">-</span><span class="mf">3659.145</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">x_length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">x_vec</span><span class="p">)</span>
+<span class="n">y_length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">y_vec</span><span class="p">)</span>
+
+<span class="n">lon0</span><span class="o">=</span><span class="mi">10</span>
+<span class="n">lat0</span><span class="o">=</span><span class="mi">60</span>
+<span class="n">earth_r</span><span class="o">=</span><span class="mf">6370.04</span>
+
+<span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x_vec</span><span class="p">,</span> <span class="n">y_vec</span><span class="p">)</span>
+<span class="n">xbounds</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1100</span><span class="p">,</span> <span class="mi">900</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ybounds</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1100</span><span class="p">,</span> <span class="mi">900</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="n">x_inc</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="o">-</span><span class="mf">0.5</span><span class="p">]</span>
+<span class="n">y_inc</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">900</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1100</span><span class="p">):</span>
+        <span class="n">lon</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="mi">180</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">x_vec</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">y_vec</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span><span class="o">+</span><span class="n">lon0</span><span class="p">)</span>
+        <span class="n">lat</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mi">180</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">asin</span><span class="p">((</span><span class="n">earth_r</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">lat0</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span>
+        <span class="p">(</span><span class="n">x_vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y_vec</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="n">earth_r</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">lat0</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="p">(</span><span class="n">x_vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y_vec</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span>
+
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="n">xbounds</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="mi">180</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">x_vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="n">x_inc</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">y_vec</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="n">y_inc</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span><span class="o">+</span><span class="n">lon0</span><span class="p">)</span>
+            <span class="n">ybounds</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="mi">180</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">asin</span><span class="p">((</span><span class="n">earth_r</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">lat0</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span>
+            <span class="p">((</span><span class="n">x_vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="n">x_inc</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y_vec</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="n">earth_r</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">lat0</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span>
+            <span class="p">((</span><span class="n">x_vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="n">x_inc</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="p">(</span><span class="n">y_vec</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="n">y_inc</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span>
+            
+            
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">times</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">])</span>
+<span class="n">time_pd</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">times</span><span class="p">,</span><span class="n">periods</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">dataset_xarray</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
+    <span class="n">data_vars</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+        <span class="n">precip</span><span class="o">=</span><span class="p">([</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">arr_numpy</span><span class="p">),</span>
+        <span class="n">lon_bnds</span><span class="o">=</span><span class="p">([</span><span class="s2">&quot;x&quot;</span><span class="p">,</span><span class="s2">&quot;y&quot;</span><span class="p">,</span><span class="s2">&quot;nv4&quot;</span><span class="p">],</span><span class="n">xbounds</span><span class="p">),</span>
+        <span class="n">lat_bnds</span><span class="o">=</span><span class="p">([</span><span class="s2">&quot;x&quot;</span><span class="p">,</span><span class="s2">&quot;y&quot;</span><span class="p">,</span><span class="s2">&quot;nv4&quot;</span><span class="p">],</span><span class="n">ybounds</span><span class="p">)</span>
+    <span class="p">),</span>
+    <span class="n">coords</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+        <span class="n">lon</span><span class="o">=</span><span class="p">([</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">lon</span><span class="p">),</span>
+        <span class="n">lat</span><span class="o">=</span><span class="p">([</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">lat</span><span class="p">),</span>
+        <span class="n">time</span><span class="o">=</span><span class="n">time_pd</span><span class="p">,</span>
+<span class="c1">#      reference_time=reference_time,</span>
+    <span class="p">),)</span>
+<span class="n">dataset_xarray</span><span class="o">.</span><span class="n">attrs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Radar-based Precipitation Climatology for Germany&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;institution&#39;</span><span class="p">:</span> <span class="s1">&#39;Deutscher Wetterdienst (DWD)&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;Radar composit, gauge-adjusted&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;references&#39;</span><span class="p">:</span> <span class="s1">&#39;http://dx.doi.org/10.5676/DWD/RADKLIM_RW_V2017.002&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;history&#39;</span><span class="p">:</span><span class="s1">&#39;transformation to netcdf with procedure by Christopher Purr (University of Hamburg) 2023/01/01&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;Conventions&#39;</span><span class="p">:</span><span class="s1">&#39;CF-1.8&#39;</span><span class="p">}</span>
+
+
+<span class="n">dataset_xarray</span><span class="p">[</span><span class="s1">&#39;precip&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;units&#39;</span><span class="p">:</span> <span class="s1">&#39;kg m-2&#39;</span><span class="p">,</span> <span class="s1">&#39;standard_name&#39;</span><span class="p">:</span> <span class="s1">&#39;precipitation_amount&#39;</span><span class="p">,</span> <span class="s1">&#39;long_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Precipitation Amount&#39;</span><span class="p">}</span>
+<span class="n">dataset_xarray</span><span class="p">[</span><span class="s1">&#39;precip&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset_xarray</span><span class="p">[</span><span class="s1">&#39;precip&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dataset_xarray</span><span class="p">[</span><span class="s1">&#39;precip&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="o">-</span><span class="mf">9999.</span><span class="p">)</span>
+<span class="n">dataset_xarray</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;standard_name&#39;</span><span class="p">:</span><span class="s1">&#39;longitude&#39;</span><span class="p">,</span><span class="s1">&#39;units&#39;</span><span class="p">:</span> <span class="s1">&#39;degrees_east&#39;</span><span class="p">,</span><span class="s1">&#39;bounds&#39;</span><span class="p">:</span> <span class="s1">&#39;lon_bnds&#39;</span><span class="p">}</span>
+<span class="n">dataset_xarray</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;standard_name&#39;</span><span class="p">:</span><span class="s1">&#39;latitude&#39;</span><span class="p">,</span><span class="s1">&#39;units&#39;</span><span class="p">:</span> <span class="s1">&#39;degrees_north&#39;</span><span class="p">,</span><span class="s1">&#39;bounds&#39;</span><span class="p">:</span> <span class="s1">&#39;lat_bnds&#39;</span><span class="p">}</span>
+
+<span class="n">dataset_xarray</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s2">&quot;./dataset_xarray_with_coordinates.nc&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset_xarray</span><span class="p">[</span><span class="s1">&#39;precip&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.QuadMesh at 0x7f7672aeaa90&gt;
+</pre></div>
+</div>
+<img alt="_images/8f60989f695590f777364bc8b821251f8263489d77592600cb366967b25dab99.png" src="_images/8f60989f695590f777364bc8b821251f8263489d77592600cb366967b25dab99.png" />
+</div>
+</div>
+</section>
+<section id="checking-if-the-netcdf-file-conforms-to-the-cf-standard">
+<h2>5. Checking if the netcdf-file conforms to the cf-Standard<a class="headerlink" href="#checking-if-the-netcdf-file-conforms-to-the-cf-standard" title="Permalink to this heading">#</a></h2>
+<p>To check whether the netCDF-file we created conforms to the CF-Standard, we use the so-called “CF-Checker”: <a class="github reference external" href="https://github.com/cedadev/cf-checker">cedadev/cf-checker</a></p>
+<p>It can be installed by using the package manager <code class="docutils literal notranslate"><span class="pre">Conda</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">cfchecker</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">cfchecker</span> <span class="c1"># create new env OR</span>
+<span class="n">conda</span> <span class="n">install</span> <span class="n">cfchecker</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span>             <span class="c1"># install on existing env</span>
+</pre></div>
+</div>
+<p>Then, it can be executed the following way:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>cfchecks dataset_xarray_with_coordinates.nc
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CHECKING NetCDF FILE: dataset_xarray_with_coordinates.nc
+=====================
+Using CF Checker Version 4.1.0
+Checking against CF Version CF-1.8
+Using Standard Name Table Version 82 (2023-07-06T13:17:07Z)
+Using Area Type Table Version 11 (06 July 2023)
+Using Standardized Region Name Table Version 4 (18 December 2018)
+
+
+------------------
+Checking variable: precip
+------------------
+
+------------------
+Checking variable: lon_bnds
+------------------
+WARN: (7.1): Boundary Variable lon_bnds should not have _FillValue attribute
+
+------------------
+Checking variable: lat_bnds
+------------------
+WARN: (7.1): Boundary Variable lat_bnds should not have _FillValue attribute
+
+------------------
+Checking variable: lon
+------------------
+
+------------------
+Checking variable: lat
+------------------
+
+------------------
+Checking variable: time
+------------------
+WARN: (3): No standard_name or long_name attribute specified
+
+ERRORS detected: 0
+WARNINGS given: 3
+INFORMATION messages: 0
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="further-material">
+<h2>Further material<a class="headerlink" href="#further-material" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://unidata.github.io/python-training/workshop/CF%20Conventions/netcdf-and-cf-the-basics/">https://unidata.github.io/python-training/workshop/CF Conventions/netcdf-and-cf-the-basics/</a></p></li>
+<li><p>CF-Conventions - Overview: <a class="reference external" href="https://cfconventions.org/">https://cfconventions.org/</a></p></li>
+<li><p>CF-Conventions - current version: <a class="reference external" href="http://cfconventions.org/cf-conventions/cf-conventions.html">http://cfconventions.org/cf-conventions/cf-conventions.html</a></p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Creating cf-compliant netCDF files in python using a radar-based precipitation data set as example</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#learning-objectives">Learning Objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction">Introduction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#libraries">Libraries</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-the-data">1. Download the data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#untar-the-data">2. Untar the data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#read-the-data">3. Read the data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ascii-header">3.1. ASCII-header</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data-binary-part">3.2. Data (binary) part</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#process-data">4. Process data</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculation-of-grid-coordinates">4.2 Calculation of grid coordinates</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#checking-if-the-netcdf-file-conforms-to-the-cf-standard">5. Checking if the netcdf-file conforms to the cf-Standard</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-material">Further material</a></li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Christopher Purr, Remon Sadikni (ICDC, NFDI4Earth, Uni Hamburg)
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

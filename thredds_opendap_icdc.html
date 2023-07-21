@@ -1,0 +1,1420 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>How to discover and access data using THREDDS and OPeNDAP on the example of the Integrated climate data center &#8212; How to create publishable netcdf-data</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'thredds_opendap_icdc';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">How to create publishable netcdf-data</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Introduction
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="netcdf_format.html">The netCDF data format</a></li>
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="cf-conventions.html">The NetCDF Climate and Forecast (CF) Metadata Conventions</a></li>
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="xarray_create_netcdf.html">Handling netcdf data with Xarray</a></li>
+<li class="toctree-l1"><a class="reference internal" href="radklim_conversion.html">Erstellung von cf-kompatiblen netcdf-Daten mit R</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="nco.html">Manipulating attributes and variable names with NCO</a></li>
+
+
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2Fthredds_opendap_icdc.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/thredds_opendap_icdc.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>How to discover and access data using THREDDS and OPeNDAP on the example of the Integrated climate data center</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-thredds">What is THREDDS?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datasets-overview">1. Datasets Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#browsing-the-server-catalog-with-siphon">2. Browsing the Server Catalog with siphon</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#opening-datasets-via-opendap">3. Opening datasets via OPeNDAP</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-xarray">3.1 Using Xarray</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-netcdf4">3.2 Using netCDF4</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#weitere-materialien">Weitere Materialien</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <p><a id="top"></a></p>
+<section class="tex2jax_ignore mathjax_ignore" id="how-to-discover-and-access-data-using-thredds-and-opendap-on-the-example-of-the-integrated-climate-data-center">
+<h1>How to discover and access data using THREDDS and OPeNDAP on the example of the Integrated climate data center<a class="headerlink" href="#how-to-discover-and-access-data-using-thredds-and-opendap-on-the-example-of-the-integrated-climate-data-center" title="Permalink to this heading">#</a></h1>
+<table>
+    <tr>
+      <td>
+      <img src='uhh-logo-16dab7756eecc70a7649a242498868c6bb37872e5eae6023b38026faeef923c3.svg'
+           width=300>
+      </td>
+      <td>
+      <img src='NFDI4Earth_logo.png'width=300>
+      </td>
+     </tr>
+</table>
+<hr class="docutils" />
+<section id="what-is-thredds">
+<h2>What is THREDDS?<a class="headerlink" href="#what-is-thredds" title="Permalink to this heading">#</a></h2>
+<p>The THREDDS Data Server provides data access for scientific datasets, especially for geo-referenced
+data (netCDF, HDF, GRIB, etc.). Via THREDDS you can download datasets with your web browser or
+use subsets without downloading the datasets (OPeNDAP).</p>
+</section>
+<section id="datasets-overview">
+<h2>1. Datasets Overview<a class="headerlink" href="#datasets-overview" title="Permalink to this heading">#</a></h2>
+<p>If you click on a THREDDS or OPeNDAP link in our data center, you will get an overview of these
+datasets. E.g. if you choose ECCO-SIO, you will get a list of files with information about size and
+modification date:
+<a class="reference external" href="http://icdc.cen.uni-hamburg.de/thredds/catalog/ftpthredds/EASYInit/ECCO/catalog.html">http://icdc.cen.uni-hamburg.de/thredds/catalog/ftpthredds/EASYInit/ECCO/catalog.html</a></p>
+</section>
+<section id="browsing-the-server-catalog-with-siphon">
+<h2>2. Browsing the Server Catalog with siphon<a class="headerlink" href="#browsing-the-server-catalog-with-siphon" title="Permalink to this heading">#</a></h2>
+<p>Instead of going through the data catlog manually, one can use the python package <code class="docutils literal notranslate"><span class="pre">siphon</span></code> to browse for datasets programatically.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">siphon</span> <span class="kn">import</span> <span class="n">catalog</span>
+
+<span class="n">cat</span> <span class="o">=</span> <span class="n">catalog</span><span class="o">.</span><span class="n">TDSCatalog</span><span class="p">(</span><span class="s1">&#39;https://icdc.cen.uni-hamburg.de/thredds/catalog.xml&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">catalog_refs</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">siphon</span> <span class="kn">import</span> <span class="n">catalog</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">cat</span> <span class="o">=</span> <span class="n">catalog</span><span class="o">.</span><span class="n">TDSCatalog</span><span class="p">(</span><span class="s1">&#39;https://icdc.cen.uni-hamburg.de/thredds/catalog.xml&#39;</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">catalog_refs</span><span class="p">))</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;siphon&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Listing datasets in folder <code class="docutils literal notranslate"><span class="pre">https://icdc.cen.uni-hamburg.de/thredds/catalog/ftpthredds/fesstval/wind_and_gust/falkenberg_sonic90m/level2/catalog.html</span></code></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">catalog_url</span><span class="o">=</span><span class="s2">&quot;https://icdc.cen.uni-hamburg.de/thredds/catalog/ftpthredds/fesstval/wind_and_gust/falkenberg_sonic90m/level2/catalog.xml&quot;</span>
+
+<span class="n">tds</span> <span class="o">=</span> <span class="n">catalog</span><span class="o">.</span><span class="n">TDSCatalog</span><span class="p">(</span><span class="n">catalog_url</span><span class="p">)</span>
+<span class="n">datasets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tds</span><span class="o">.</span><span class="n">datasets</span><span class="p">)</span>
+<span class="n">endpts</span> <span class="o">=</span> <span class="n">tds</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+<span class="n">datasets</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;sups_rao_turb03_l2_wind_v00_20210831000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210830000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210829000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210828000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210827000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210826000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210825000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210824000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210823000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210822000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210821000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210820000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210819000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210818000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210817000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210816000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210815000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210814000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210813000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210812000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210811000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210810000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210809000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210808000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210807000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210806000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210805000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210804000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210803000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210802000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210801000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210731000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210730000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210729000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210728000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210727000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210726000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210725000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210724000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210723000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210722000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210721000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210720000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210719000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210718000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210717000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210716000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210715000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210714000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210713000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210712000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210711000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210710000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210709000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210708000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210707000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210706000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210705000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210704000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210703000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210702000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210701000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210630000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210629000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210628000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210627000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210626000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210625000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210624000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210623000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210622000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210621000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210620000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210619000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210618000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210617000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210616000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210615000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210614000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210613000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210612000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210611000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210610000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210609000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210608000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210607000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210606000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210605000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210604000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210603000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210602000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210601000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210531000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210530000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210529000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210528000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210527000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210526000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210525000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210524000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210523000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210522000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210521000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210520000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210519000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210518000000.nc&#39;,
+ &#39;sups_rao_turb03_l2_wind_v00_20210517000000.nc&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="opening-datasets-via-opendap">
+<h2>3. Opening datasets via OPeNDAP<a class="headerlink" href="#opening-datasets-via-opendap" title="Permalink to this heading">#</a></h2>
+<section id="using-xarray">
+<h3>3.1 Using Xarray<a class="headerlink" href="#using-xarray" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xa</span>
+
+<span class="n">dap_url</span><span class="o">=</span><span class="s2">&quot;https://icdc.cen.uni-hamburg.de/thredds/dodsC/ftpthredds/fesstval/wind_and_gust/falkenberg_sonic90m/level2/sups_rao_turb03_l2_wind_v00_20210831000000.nc&quot;</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">xa</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">dap_url</span><span class="p">)</span>
+<span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div><svg style="position: absolute; width: 0; height: 0; overflow: hidden">
+<defs>
+<symbol id="icon-database" viewBox="0 0 32 32">
+<path d="M16 0c-8.837 0-16 2.239-16 5v4c0 2.761 7.163 5 16 5s16-2.239 16-5v-4c0-2.761-7.163-5-16-5z"></path>
+<path d="M16 17c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+<path d="M16 26c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+</symbol>
+<symbol id="icon-file-text2" viewBox="0 0 32 32">
+<path d="M28.681 7.159c-0.694-0.947-1.662-2.053-2.724-3.116s-2.169-2.030-3.116-2.724c-1.612-1.182-2.393-1.319-2.841-1.319h-15.5c-1.378 0-2.5 1.121-2.5 2.5v27c0 1.378 1.122 2.5 2.5 2.5h23c1.378 0 2.5-1.122 2.5-2.5v-19.5c0-0.448-0.137-1.23-1.319-2.841zM24.543 5.457c0.959 0.959 1.712 1.825 2.268 2.543h-4.811v-4.811c0.718 0.556 1.584 1.309 2.543 2.268zM28 29.5c0 0.271-0.229 0.5-0.5 0.5h-23c-0.271 0-0.5-0.229-0.5-0.5v-27c0-0.271 0.229-0.5 0.5-0.5 0 0 15.499-0 15.5 0v7c0 0.552 0.448 1 1 1h7v19.5z"></path>
+<path d="M23 26h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 22h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 18h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+</symbol>
+</defs>
+</svg>
+<style>/* CSS stylesheet for displaying xarray objects in jupyterlab.
+ *
+ */
+
+:root {
+  --xr-font-color0: var(--jp-content-font-color0, rgba(0, 0, 0, 1));
+  --xr-font-color2: var(--jp-content-font-color2, rgba(0, 0, 0, 0.54));
+  --xr-font-color3: var(--jp-content-font-color3, rgba(0, 0, 0, 0.38));
+  --xr-border-color: var(--jp-border-color2, #e0e0e0);
+  --xr-disabled-color: var(--jp-layout-color3, #bdbdbd);
+  --xr-background-color: var(--jp-layout-color0, white);
+  --xr-background-color-row-even: var(--jp-layout-color1, white);
+  --xr-background-color-row-odd: var(--jp-layout-color2, #eeeeee);
+}
+
+html[theme=dark],
+body.vscode-dark {
+  --xr-font-color0: rgba(255, 255, 255, 1);
+  --xr-font-color2: rgba(255, 255, 255, 0.54);
+  --xr-font-color3: rgba(255, 255, 255, 0.38);
+  --xr-border-color: #1F1F1F;
+  --xr-disabled-color: #515151;
+  --xr-background-color: #111111;
+  --xr-background-color-row-even: #111111;
+  --xr-background-color-row-odd: #313131;
+}
+
+.xr-wrap {
+  display: block;
+  min-width: 300px;
+  max-width: 700px;
+}
+
+.xr-text-repr-fallback {
+  /* fallback to plain text repr when CSS is not injected (untrusted notebook) */
+  display: none;
+}
+
+.xr-header {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+  border-bottom: solid 1px var(--xr-border-color);
+}
+
+.xr-header > div,
+.xr-header > ul {
+  display: inline;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.xr-obj-type,
+.xr-array-name {
+  margin-left: 2px;
+  margin-right: 10px;
+}
+
+.xr-obj-type {
+  color: var(--xr-font-color2);
+}
+
+.xr-sections {
+  padding-left: 0 !important;
+  display: grid;
+  grid-template-columns: 150px auto auto 1fr 20px 20px;
+}
+
+.xr-section-item {
+  display: contents;
+}
+
+.xr-section-item input {
+  display: none;
+}
+
+.xr-section-item input + label {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-item input:enabled + label {
+  cursor: pointer;
+  color: var(--xr-font-color2);
+}
+
+.xr-section-item input:enabled + label:hover {
+  color: var(--xr-font-color0);
+}
+
+.xr-section-summary {
+  grid-column: 1;
+  color: var(--xr-font-color2);
+  font-weight: 500;
+}
+
+.xr-section-summary > span {
+  display: inline-block;
+  padding-left: 0.5em;
+}
+
+.xr-section-summary-in:disabled + label {
+  color: var(--xr-font-color2);
+}
+
+.xr-section-summary-in + label:before {
+  display: inline-block;
+  content: '►';
+  font-size: 11px;
+  width: 15px;
+  text-align: center;
+}
+
+.xr-section-summary-in:disabled + label:before {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-summary-in:checked + label:before {
+  content: '▼';
+}
+
+.xr-section-summary-in:checked + label > span {
+  display: none;
+}
+
+.xr-section-summary,
+.xr-section-inline-details {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.xr-section-inline-details {
+  grid-column: 2 / -1;
+}
+
+.xr-section-details {
+  display: none;
+  grid-column: 1 / -1;
+  margin-bottom: 5px;
+}
+
+.xr-section-summary-in:checked ~ .xr-section-details {
+  display: contents;
+}
+
+.xr-array-wrap {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 20px auto;
+}
+
+.xr-array-wrap > label {
+  grid-column: 1;
+  vertical-align: top;
+}
+
+.xr-preview {
+  color: var(--xr-font-color3);
+}
+
+.xr-array-preview,
+.xr-array-data {
+  padding: 0 5px !important;
+  grid-column: 2;
+}
+
+.xr-array-data,
+.xr-array-in:checked ~ .xr-array-preview {
+  display: none;
+}
+
+.xr-array-in:checked ~ .xr-array-data,
+.xr-array-preview {
+  display: inline-block;
+}
+
+.xr-dim-list {
+  display: inline-block !important;
+  list-style: none;
+  padding: 0 !important;
+  margin: 0;
+}
+
+.xr-dim-list li {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+
+.xr-dim-list:before {
+  content: '(';
+}
+
+.xr-dim-list:after {
+  content: ')';
+}
+
+.xr-dim-list li:not(:last-child):after {
+  content: ',';
+  padding-right: 5px;
+}
+
+.xr-has-index {
+  font-weight: bold;
+}
+
+.xr-var-list,
+.xr-var-item {
+  display: contents;
+}
+
+.xr-var-item > div,
+.xr-var-item label,
+.xr-var-item > .xr-var-name span {
+  background-color: var(--xr-background-color-row-even);
+  margin-bottom: 0;
+}
+
+.xr-var-item > .xr-var-name:hover span {
+  padding-right: 5px;
+}
+
+.xr-var-list > li:nth-child(odd) > div,
+.xr-var-list > li:nth-child(odd) > label,
+.xr-var-list > li:nth-child(odd) > .xr-var-name span {
+  background-color: var(--xr-background-color-row-odd);
+}
+
+.xr-var-name {
+  grid-column: 1;
+}
+
+.xr-var-dims {
+  grid-column: 2;
+}
+
+.xr-var-dtype {
+  grid-column: 3;
+  text-align: right;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-preview {
+  grid-column: 4;
+}
+
+.xr-var-name,
+.xr-var-dims,
+.xr-var-dtype,
+.xr-preview,
+.xr-attrs dt {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 10px;
+}
+
+.xr-var-name:hover,
+.xr-var-dims:hover,
+.xr-var-dtype:hover,
+.xr-attrs dt:hover {
+  overflow: visible;
+  width: auto;
+  z-index: 1;
+}
+
+.xr-var-attrs,
+.xr-var-data {
+  display: none;
+  background-color: var(--xr-background-color) !important;
+  padding-bottom: 5px !important;
+}
+
+.xr-var-attrs-in:checked ~ .xr-var-attrs,
+.xr-var-data-in:checked ~ .xr-var-data {
+  display: block;
+}
+
+.xr-var-data > table {
+  float: right;
+}
+
+.xr-var-name span,
+.xr-var-data,
+.xr-attrs {
+  padding-left: 25px !important;
+}
+
+.xr-attrs,
+.xr-var-attrs,
+.xr-var-data {
+  grid-column: 1 / -1;
+}
+
+dl.xr-attrs {
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 125px auto;
+}
+
+.xr-attrs dt,
+.xr-attrs dd {
+  padding: 0;
+  margin: 0;
+  float: left;
+  padding-right: 10px;
+  width: auto;
+}
+
+.xr-attrs dt {
+  font-weight: normal;
+  grid-column: 1;
+}
+
+.xr-attrs dt:hover span {
+  display: inline-block;
+  background: var(--xr-background-color);
+  padding-right: 10px;
+}
+
+.xr-attrs dd {
+  grid-column: 2;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.xr-icon-database,
+.xr-icon-file-text2 {
+  display: inline-block;
+  vertical-align: middle;
+  width: 1em;
+  height: 1.5em !important;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+</style><pre class='xr-text-repr-fallback'>&lt;xarray.Dataset&gt;
+Dimensions:     (time: 144, nv: 2)
+Coordinates:
+  * time        (time) datetime64[ns] 2021-08-31T00:10:00 ... 2021-09-01
+Dimensions without coordinates: nv
+Data variables: (12/17)
+    u           (time) float32 1.048 1.081 1.467 1.639 ... 4.466 4.539 4.56
+    v           (time) float32 -7.384 -6.659 -6.372 ... -6.323 -6.328 -6.297
+    w           (time) float32 -0.01846 -0.1078 0.0379 ... 0.1138 0.1146 0.08874
+    qc_u        (time) int8 1 1 1 1 1 1 1 1 1 1 1 1 ... 1 1 1 1 1 1 1 1 1 1 1 1
+    qc_v        (time) int8 1 1 1 1 1 1 1 1 1 1 1 1 ... 1 1 1 1 1 1 1 1 1 1 1 1
+    qc_w        (time) int8 1 1 1 1 1 1 1 1 1 1 1 1 ... 1 1 1 1 1 1 1 1 1 1 1 1
+    ...          ...
+    G           (time) float32 1.379 1.272 1.396 1.454 ... 1.124 1.102 1.109
+    lon         float64 14.14
+    lat         float64 52.17
+    height      float64 90.3
+    zsl         float64 73.0
+    time_bnds   (time, nv) datetime64[ns] 2021-08-31 ... 2021-09-01
+Attributes:
+    title:            Ultrasonic anemometer data with wind and gust products,...
+    description:      Daily netCDF file with quality checked data for 10 min ...
+    institution:      Deutscher Wetterdienst, Meteorologisches Observatorium ...
+    contact_person:   Carola Detring, carola.detring@dwd.de
+    site_location:    Lindenberg, Boundary-layer field site Falkenberg
+    source:           instrument: usa1_standard_1 , manufacturer: metek , Sta...
+    history:          Data processed with Sonic_data_to_l0_l1_l2_v01.py
+    processing_date:  Created Fri Jan 13 21:27:37 2023
+    Conventions:      CF-1.8
+    author:           Carola Detring, carola.detring@dwd.de
+    comments:          
+    licence:          For non-commercial use only. This data is subject to th...</pre><div class='xr-wrap' hidden><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-066fa914-9122-49fd-9081-89d349a18af5' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-066fa914-9122-49fd-9081-89d349a18af5' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>time</span>: 144</li><li><span>nv</span>: 2</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-aecf2d2d-1f0a-4816-9186-12f6b1761ee3' class='xr-section-summary-in' type='checkbox'  checked><label for='section-aecf2d2d-1f0a-4816-9186-12f6b1761ee3' class='xr-section-summary' >Coordinates: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>time</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>2021-08-31T00:10:00 ... 2021-09-01</div><input id='attrs-6192b173-c460-40f1-bbc7-5095ba4397df' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-6192b173-c460-40f1-bbc7-5095ba4397df' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-fd875247-bd5d-47d4-8092-669355351b40' class='xr-var-data-in' type='checkbox'><label for='data-fd875247-bd5d-47d4-8092-669355351b40' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>time</dd><dt><span>long_name :</span></dt><dd>time</dd><dt><span>comments :</span></dt><dd>Timestamp belongs to the end of the interval in UTC.</dd><dt><span>bounds :</span></dt><dd>time_bnds</dd></dl></div><div class='xr-var-data'><pre>array([&#x27;2021-08-31T00:10:00.000000000&#x27;, &#x27;2021-08-31T00:20:00.000000000&#x27;,
+       &#x27;2021-08-31T00:30:00.000000000&#x27;, &#x27;2021-08-31T00:40:00.000000000&#x27;,
+       &#x27;2021-08-31T00:50:00.000000000&#x27;, &#x27;2021-08-31T01:00:00.000000000&#x27;,
+       &#x27;2021-08-31T01:10:00.000000000&#x27;, &#x27;2021-08-31T01:20:00.000000000&#x27;,
+       &#x27;2021-08-31T01:30:00.000000000&#x27;, &#x27;2021-08-31T01:40:00.000000000&#x27;,
+       &#x27;2021-08-31T01:50:00.000000000&#x27;, &#x27;2021-08-31T02:00:00.000000000&#x27;,
+       &#x27;2021-08-31T02:10:00.000000000&#x27;, &#x27;2021-08-31T02:20:00.000000000&#x27;,
+       &#x27;2021-08-31T02:30:00.000000000&#x27;, &#x27;2021-08-31T02:40:00.000000000&#x27;,
+       &#x27;2021-08-31T02:50:00.000000000&#x27;, &#x27;2021-08-31T03:00:00.000000000&#x27;,
+       &#x27;2021-08-31T03:10:00.000000000&#x27;, &#x27;2021-08-31T03:20:00.000000000&#x27;,
+       &#x27;2021-08-31T03:30:00.000000000&#x27;, &#x27;2021-08-31T03:40:00.000000000&#x27;,
+       &#x27;2021-08-31T03:50:00.000000000&#x27;, &#x27;2021-08-31T04:00:00.000000000&#x27;,
+       &#x27;2021-08-31T04:10:00.000000000&#x27;, &#x27;2021-08-31T04:20:00.000000000&#x27;,
+       &#x27;2021-08-31T04:30:00.000000000&#x27;, &#x27;2021-08-31T04:40:00.000000000&#x27;,
+       &#x27;2021-08-31T04:50:00.000000000&#x27;, &#x27;2021-08-31T05:00:00.000000000&#x27;,
+       &#x27;2021-08-31T05:10:00.000000000&#x27;, &#x27;2021-08-31T05:20:00.000000000&#x27;,
+       &#x27;2021-08-31T05:30:00.000000000&#x27;, &#x27;2021-08-31T05:40:00.000000000&#x27;,
+       &#x27;2021-08-31T05:50:00.000000000&#x27;, &#x27;2021-08-31T06:00:00.000000000&#x27;,
+       &#x27;2021-08-31T06:10:00.000000000&#x27;, &#x27;2021-08-31T06:20:00.000000000&#x27;,
+       &#x27;2021-08-31T06:30:00.000000000&#x27;, &#x27;2021-08-31T06:40:00.000000000&#x27;,
+       &#x27;2021-08-31T06:50:00.000000000&#x27;, &#x27;2021-08-31T07:00:00.000000000&#x27;,
+       &#x27;2021-08-31T07:10:00.000000000&#x27;, &#x27;2021-08-31T07:20:00.000000000&#x27;,
+       &#x27;2021-08-31T07:30:00.000000000&#x27;, &#x27;2021-08-31T07:40:00.000000000&#x27;,
+       &#x27;2021-08-31T07:50:00.000000000&#x27;, &#x27;2021-08-31T08:00:00.000000000&#x27;,
+       &#x27;2021-08-31T08:10:00.000000000&#x27;, &#x27;2021-08-31T08:20:00.000000000&#x27;,
+       &#x27;2021-08-31T08:30:00.000000000&#x27;, &#x27;2021-08-31T08:40:00.000000000&#x27;,
+       &#x27;2021-08-31T08:50:00.000000000&#x27;, &#x27;2021-08-31T09:00:00.000000000&#x27;,
+       &#x27;2021-08-31T09:10:00.000000000&#x27;, &#x27;2021-08-31T09:20:00.000000000&#x27;,
+       &#x27;2021-08-31T09:30:00.000000000&#x27;, &#x27;2021-08-31T09:40:00.000000000&#x27;,
+       &#x27;2021-08-31T09:50:00.000000000&#x27;, &#x27;2021-08-31T10:00:00.000000000&#x27;,
+       &#x27;2021-08-31T10:10:00.000000000&#x27;, &#x27;2021-08-31T10:20:00.000000000&#x27;,
+       &#x27;2021-08-31T10:30:00.000000000&#x27;, &#x27;2021-08-31T10:40:00.000000000&#x27;,
+       &#x27;2021-08-31T10:50:00.000000000&#x27;, &#x27;2021-08-31T11:00:00.000000000&#x27;,
+       &#x27;2021-08-31T11:10:00.000000000&#x27;, &#x27;2021-08-31T11:20:00.000000000&#x27;,
+       &#x27;2021-08-31T11:30:00.000000000&#x27;, &#x27;2021-08-31T11:40:00.000000000&#x27;,
+       &#x27;2021-08-31T11:50:00.000000000&#x27;, &#x27;2021-08-31T12:00:00.000000000&#x27;,
+       &#x27;2021-08-31T12:10:00.000000000&#x27;, &#x27;2021-08-31T12:20:00.000000000&#x27;,
+       &#x27;2021-08-31T12:30:00.000000000&#x27;, &#x27;2021-08-31T12:40:00.000000000&#x27;,
+       &#x27;2021-08-31T12:50:00.000000000&#x27;, &#x27;2021-08-31T13:00:00.000000000&#x27;,
+       &#x27;2021-08-31T13:10:00.000000000&#x27;, &#x27;2021-08-31T13:20:00.000000000&#x27;,
+       &#x27;2021-08-31T13:30:00.000000000&#x27;, &#x27;2021-08-31T13:40:00.000000000&#x27;,
+       &#x27;2021-08-31T13:50:00.000000000&#x27;, &#x27;2021-08-31T14:00:00.000000000&#x27;,
+       &#x27;2021-08-31T14:10:00.000000000&#x27;, &#x27;2021-08-31T14:20:00.000000000&#x27;,
+       &#x27;2021-08-31T14:30:00.000000000&#x27;, &#x27;2021-08-31T14:40:00.000000000&#x27;,
+       &#x27;2021-08-31T14:50:00.000000000&#x27;, &#x27;2021-08-31T15:00:00.000000000&#x27;,
+       &#x27;2021-08-31T15:10:00.000000000&#x27;, &#x27;2021-08-31T15:20:00.000000000&#x27;,
+       &#x27;2021-08-31T15:30:00.000000000&#x27;, &#x27;2021-08-31T15:40:00.000000000&#x27;,
+       &#x27;2021-08-31T15:50:00.000000000&#x27;, &#x27;2021-08-31T16:00:00.000000000&#x27;,
+       &#x27;2021-08-31T16:10:00.000000000&#x27;, &#x27;2021-08-31T16:20:00.000000000&#x27;,
+       &#x27;2021-08-31T16:30:00.000000000&#x27;, &#x27;2021-08-31T16:40:00.000000000&#x27;,
+       &#x27;2021-08-31T16:50:00.000000000&#x27;, &#x27;2021-08-31T17:00:00.000000000&#x27;,
+       &#x27;2021-08-31T17:10:00.000000000&#x27;, &#x27;2021-08-31T17:20:00.000000000&#x27;,
+       &#x27;2021-08-31T17:30:00.000000000&#x27;, &#x27;2021-08-31T17:40:00.000000000&#x27;,
+       &#x27;2021-08-31T17:50:00.000000000&#x27;, &#x27;2021-08-31T18:00:00.000000000&#x27;,
+       &#x27;2021-08-31T18:10:00.000000000&#x27;, &#x27;2021-08-31T18:20:00.000000000&#x27;,
+       &#x27;2021-08-31T18:30:00.000000000&#x27;, &#x27;2021-08-31T18:40:00.000000000&#x27;,
+       &#x27;2021-08-31T18:50:00.000000000&#x27;, &#x27;2021-08-31T19:00:00.000000000&#x27;,
+       &#x27;2021-08-31T19:10:00.000000000&#x27;, &#x27;2021-08-31T19:20:00.000000000&#x27;,
+       &#x27;2021-08-31T19:30:00.000000000&#x27;, &#x27;2021-08-31T19:40:00.000000000&#x27;,
+       &#x27;2021-08-31T19:50:00.000000000&#x27;, &#x27;2021-08-31T20:00:00.000000000&#x27;,
+       &#x27;2021-08-31T20:10:00.000000000&#x27;, &#x27;2021-08-31T20:20:00.000000000&#x27;,
+       &#x27;2021-08-31T20:30:00.000000000&#x27;, &#x27;2021-08-31T20:40:00.000000000&#x27;,
+       &#x27;2021-08-31T20:50:00.000000000&#x27;, &#x27;2021-08-31T21:00:00.000000000&#x27;,
+       &#x27;2021-08-31T21:10:00.000000000&#x27;, &#x27;2021-08-31T21:20:00.000000000&#x27;,
+       &#x27;2021-08-31T21:30:00.000000000&#x27;, &#x27;2021-08-31T21:40:00.000000000&#x27;,
+       &#x27;2021-08-31T21:50:00.000000000&#x27;, &#x27;2021-08-31T22:00:00.000000000&#x27;,
+       &#x27;2021-08-31T22:10:00.000000000&#x27;, &#x27;2021-08-31T22:20:00.000000000&#x27;,
+       &#x27;2021-08-31T22:30:00.000000000&#x27;, &#x27;2021-08-31T22:40:00.000000000&#x27;,
+       &#x27;2021-08-31T22:50:00.000000000&#x27;, &#x27;2021-08-31T23:00:00.000000000&#x27;,
+       &#x27;2021-08-31T23:10:00.000000000&#x27;, &#x27;2021-08-31T23:20:00.000000000&#x27;,
+       &#x27;2021-08-31T23:30:00.000000000&#x27;, &#x27;2021-08-31T23:40:00.000000000&#x27;,
+       &#x27;2021-08-31T23:50:00.000000000&#x27;, &#x27;2021-09-01T00:00:00.000000000&#x27;],
+      dtype=&#x27;datetime64[ns]&#x27;)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-82b83ad1-ab40-4d61-8c12-e3c7020917f4' class='xr-section-summary-in' type='checkbox'  ><label for='section-82b83ad1-ab40-4d61-8c12-e3c7020917f4' class='xr-section-summary' >Data variables: <span>(17)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>u</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-e9a38491-6301-4f8d-9b37-f0fb610cb0e7' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-e9a38491-6301-4f8d-9b37-f0fb610cb0e7' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-8ac8ffe3-684f-454f-a6a3-86a97ead0ba4' class='xr-var-data-in' type='checkbox'><label for='data-8ac8ffe3-684f-454f-a6a3-86a97ead0ba4' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>comments :</span></dt><dd>&quot;Eastward&quot; indicates a vector component which is positive when directed eastward (negative westward)</dd><dt><span>fill_value :</span></dt><dd>-999.0</dd><dt><span>units :</span></dt><dd>m s-1</dd><dt><span>ancillary_variables :</span></dt><dd>qc_u</dd><dt><span>standard_name :</span></dt><dd>eastward_wind</dd><dt><span>long_name :</span></dt><dd>eastward wind</dd></dl></div><div class='xr-var-data'><pre>array([1.0482  , 1.080736, 1.467282, 1.639113, 1.866248, 1.95424 , 2.036364,
+       2.232518, 2.470738, 2.597733, 2.500774, 2.013527, 1.16869 , 1.218323,
+       2.258007, 2.878914, 2.681358, 3.168937, 2.395766, 2.585958, 3.380577,
+       3.170181, 2.896097, 3.269443, 3.323977, 3.453645, 3.92979 , 4.013351,
+       3.622269, 3.248646, 2.960909, 2.940229, 3.205716, 3.125   , 2.615441,
+       2.573415, 2.702034, 3.128301, 3.031682, 2.672066, 2.6691  , 2.401165,
+       2.112931, 2.227637, 2.420877, 2.857836, 2.512832, 2.16432 , 1.437799,
+       1.327395, 1.429321, 1.950593, 2.537148, 2.863469, 2.934622, 2.380639,
+       1.794369, 1.876353, 2.146712, 2.108283, 1.831767, 1.263209, 1.193468,
+       1.330859, 1.376105, 1.903339, 1.514139, 2.125124, 1.809556, 1.672376,
+       1.662452, 2.876529, 1.104765, 1.481743, 1.08783 , 1.362597, 2.321159,
+       0.495177, 2.809751, 2.92665 , 2.570028, 2.678684, 2.910158, 3.021492,
+       3.247083, 2.319552, 1.47194 , 2.414422, 2.939873, 2.398262, 2.438002,
+       2.981838, 2.006964, 1.577568, 0.843386, 1.398695, 1.953494, 2.35097 ,
+       0.751596, 1.395503, 1.864063, 1.516703, 1.390613, 1.435059, 1.306604,
+       1.341627, 1.68587 , 1.657617, 1.506219, 1.432179, 1.626007, 1.495469,
+       1.67805 , 1.456759, 1.189528, 1.269751, 1.352406, 1.46108 , 1.382446,
+       1.867872, 1.796092, 2.308962, 2.274503, 2.60105 , 2.846502, 2.796308,
+       3.335116, 3.437152, 3.048237, 2.803364, 3.32934 , 3.367221, 3.367041,
+       3.673634, 3.770476, 3.793324, 3.855062, 4.108049, 4.127495, 4.270678,
+       4.512065, 4.466081, 4.539025, 4.559568], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>v</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-dcbe7e1a-45cc-4599-a94e-3beb8c1518de' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-dcbe7e1a-45cc-4599-a94e-3beb8c1518de' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-d9fab555-1608-4e74-81ac-ea7dd33acabb' class='xr-var-data-in' type='checkbox'><label for='data-d9fab555-1608-4e74-81ac-ea7dd33acabb' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>northward wind</dd><dt><span>units :</span></dt><dd>m s-1</dd><dt><span>comments :</span></dt><dd>&quot;Northward&quot; indicates a vector component which is positive when directed northward (negative southward)</dd><dt><span>ancillary_variables :</span></dt><dd>qc_v</dd><dt><span>fill_value :</span></dt><dd>-999.0</dd><dt><span>standard_name :</span></dt><dd>northward_wind</dd></dl></div><div class='xr-var-data'><pre>array([ -7.384228,  -6.659299,  -6.372329,  -5.730716,  -6.140857,  -6.952441,
+        -7.464375,  -7.236798,  -7.22214 ,  -6.973171,  -7.02176 ,  -6.804226,
+        -5.483321,  -6.568861,  -6.754516,  -7.858388,  -6.668643,  -7.350789,
+        -6.591187,  -6.68624 ,  -7.141811,  -7.244416,  -6.869206,  -7.276466,
+        -7.46898 ,  -7.798976,  -7.630395,  -6.972326,  -6.745433,  -6.90181 ,
+        -6.721778,  -6.544772,  -6.385298,  -6.749858,  -7.29351 ,  -7.144508,
+        -7.602275,  -7.239192,  -7.377293,  -6.968234,  -7.532568,  -7.411915,
+        -7.675074,  -7.127922,  -7.149583,  -7.901933,  -7.977905,  -7.267375,
+        -7.453604,  -7.348355,  -7.604385,  -6.909259,  -6.558432,  -7.181374,
+        -7.552325,  -7.213305,  -7.504825,  -8.536533,  -8.024223,  -7.940508,
+        -7.538298,  -7.056433,  -7.990239,  -7.444089,  -6.646861,  -6.342886,
+        -8.003089,  -7.651103,  -8.507413,  -7.668558, -10.03508 , -10.151147,
+        -9.946298,  -9.458758, -10.065072,  -9.483383,  -9.991839,  -9.08631 ,
+        -9.778589, -10.387712,  -9.426719,  -9.043164,  -9.954672,  -9.988254,
+        -8.570302,  -8.247329,  -9.87125 ,  -9.258084,  -9.15729 ,  -8.558098,
+        -9.339885,  -7.33735 ,  -8.554603,  -7.666724,  -9.309385,  -9.534525,
+       -10.416729,  -8.564845,  -8.64668 ,  -8.514894,  -9.003733,  -8.026199,
+        -7.774115,  -7.190923,  -5.904469,  -5.521091,  -6.433335,  -7.683381,
+        -8.094403,  -8.329887,  -7.903824,  -8.248238,  -7.252904,  -7.892472,
+        -8.264129,  -7.747836,  -7.131239,  -7.807179,  -7.412909,  -6.48723 ,
+        -6.793642,  -6.519628,  -6.506775,  -6.680949,  -7.030235,  -7.170977,
+        -6.971017,  -7.156034,  -7.675848,  -7.922903,  -7.138376,  -6.452355,
+        -6.249243,  -6.360449,  -6.913381,  -6.475698,  -6.267996,  -6.338634,
+        -6.657721,  -6.465091,  -6.43251 ,  -6.322728,  -6.328001,  -6.296618],
+      dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>w</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-28751fc2-c699-413a-9ad2-182eeffc7ea3' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-28751fc2-c699-413a-9ad2-182eeffc7ea3' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e961c479-6668-4bbe-bb1c-d43d40c85345' class='xr-var-data-in' type='checkbox'><label for='data-e961c479-6668-4bbe-bb1c-d43d40c85345' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>upward air velocity</dd><dt><span>units :</span></dt><dd>m s-1</dd><dt><span>comments :</span></dt><dd>A velocity is a vector quantity. &quot;Upward&quot; indicates a vector component which is positive when directed upward (negative downward)</dd><dt><span>ancillary_variables :</span></dt><dd>qc_w</dd><dt><span>fill_value :</span></dt><dd>-999.0</dd><dt><span>standard_name :</span></dt><dd>upward_air_velocity</dd></dl></div><div class='xr-var-data'><pre>array([-1.846417e-02, -1.078219e-01,  3.790397e-02,  1.652606e-01,
+        7.446699e-02, -2.852419e-04,  1.094139e-02,  6.262991e-02,
+        1.272423e-03, -2.212872e-02, -1.256772e-02,  2.232142e-02,
+        2.977297e-01, -1.579715e-01, -1.576139e-02, -5.001790e-02,
+       -5.775681e-03,  2.691411e-01,  3.536845e-01, -1.462855e-01,
+       -4.394876e-02, -1.123128e-02,  1.277951e-01,  7.562527e-02,
+        7.358834e-02, -1.780032e-02,  1.068199e-01,  4.447782e-02,
+        6.849662e-02,  5.545678e-02,  1.857745e-01,  1.926677e-01,
+        1.977220e-01, -2.994558e-02, -9.986737e-02,  4.332131e-02,
+       -1.455870e-01,  2.419563e-02, -3.226720e-02,  4.234731e-02,
+        2.569683e-02, -2.202520e-02, -1.093592e-01, -1.077840e-01,
+       -1.085561e-01, -1.907062e-01, -8.594732e-02, -3.667106e-02,
+        4.241080e-02, -5.265581e-02, -1.885519e-01, -3.255777e-02,
+        6.568819e-02, -2.875965e-02, -1.809991e-01, -1.490952e-01,
+       -1.902053e-01, -1.280278e-01, -1.564204e-01, -1.802261e-01,
+       -2.490142e-01, -7.643466e-02, -2.679211e-01, -1.156913e-01,
+        4.295880e-02,  9.248120e-02, -8.137644e-02, -1.291096e-01,
+       -3.168204e-01, -1.769032e-01, -2.228446e-01, -1.479778e-01,
+        1.293333e-01,  9.561989e-02,  5.405301e-02, -1.363365e-01,
+       -3.957860e-02,  8.154102e-02, -3.546659e-01, -3.968003e-01,
+       -1.855330e-01, -1.569909e-01, -2.597438e-01, -3.090283e-01,
+       -1.025956e-01, -1.163829e-01, -5.222046e-01, -3.087229e-01,
+       -2.817997e-01,  1.331727e-02, -2.152219e-01,  1.487600e-01,
+       -2.239952e-01, -2.299089e-01, -3.073352e-01, -2.342297e-01,
+       -3.985360e-01, -1.392593e-01,  2.079600e-02, -1.710280e-01,
+       -3.605306e-01, -1.795057e-01, -1.865607e-01, -9.183904e-02,
+       -6.480776e-02, -6.827463e-03, -1.415902e-01, -4.435432e-02,
+       -1.242760e-01, -2.135276e-01, -8.740038e-02, -2.292144e-01,
+       -8.586051e-02, -6.030301e-02, -1.392652e-01, -1.689683e-01,
+       -5.922527e-02, -9.127281e-02, -7.410838e-02,  2.187285e-02,
+       -5.779923e-02,  3.725833e-02, -6.222836e-02, -1.183281e-02,
+        1.843216e-03,  5.103451e-02,  8.590078e-02,  8.919253e-02,
+        5.403696e-02,  2.490055e-02,  8.314466e-02,  5.958957e-02,
+        1.160186e-01,  9.317731e-02,  7.097866e-02,  7.106027e-02,
+        8.426506e-02,  7.529317e-02,  7.979587e-02,  6.330591e-02,
+        1.276849e-01,  1.138475e-01,  1.146130e-01,  8.874416e-02],
+      dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>qc_u</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>int8</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-f6d26109-9711-4968-b3c0-2dc9ed20cbd6' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-f6d26109-9711-4968-b3c0-2dc9ed20cbd6' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-a0085ab8-03ca-431c-bb23-9c28f1c720f2' class='xr-var-data-in' type='checkbox'><label for='data-a0085ab8-03ca-431c-bb23-9c28f1c720f2' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>quality flag for eastward wind</dd><dt><span>flag_values :</span></dt><dd>0, 1</dd><dt><span>flag_meanings :</span></dt><dd>quality_bad, quality_good </dd><dt><span>comments :</span></dt><dd>Quality flag is good if a minimum of 95% data with quality_good is used for calculation of the interval mean</dd></dl></div><div class='xr-var-data'><pre>array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      dtype=int8)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>qc_v</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>int8</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-2a7128cb-d390-4069-b16d-372c6c2ed174' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-2a7128cb-d390-4069-b16d-372c6c2ed174' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-1338bf17-6777-46e8-94e3-ab14b93da0fc' class='xr-var-data-in' type='checkbox'><label for='data-1338bf17-6777-46e8-94e3-ab14b93da0fc' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>quality flag for northward wind</dd><dt><span>flag_values :</span></dt><dd>0 , 1 </dd><dt><span>flag_meanings :</span></dt><dd>quality_bad, quality_good </dd><dt><span>comments :</span></dt><dd>Quality flag is good if a minimum of 95% data with quality_good is used for calculation of the interval mean</dd></dl></div><div class='xr-var-data'><pre>array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      dtype=int8)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>qc_w</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>int8</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-788cd295-0fe5-4105-ba16-1a6824fa433c' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-788cd295-0fe5-4105-ba16-1a6824fa433c' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-65e5d254-aa23-469d-a83c-ce17dff8dba9' class='xr-var-data-in' type='checkbox'><label for='data-65e5d254-aa23-469d-a83c-ce17dff8dba9' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>quality flag for upward air velocity</dd><dt><span>flag_values :</span></dt><dd>0 , 1</dd><dt><span>flag_meanings :</span></dt><dd>quality_bad, quality_good </dd><dt><span>comments :</span></dt><dd>Quality flag is good if a minimum of 95% data with quality_good is used for calculation of the interval mean</dd></dl></div><div class='xr-var-data'><pre>array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      dtype=int8)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>wspeed</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-9e813d10-0afe-4a10-ae09-f3efda7976d4' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-9e813d10-0afe-4a10-ae09-f3efda7976d4' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e071361f-7dd7-458e-9d49-210a948b04ba' class='xr-var-data-in' type='checkbox'><label for='data-e071361f-7dd7-458e-9d49-210a948b04ba' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>wind_speed</dd><dt><span>long_name :</span></dt><dd>wind speed</dd><dt><span>units :</span></dt><dd>m s-1</dd><dt><span>comments :</span></dt><dd>Speed is the magnitude of velocity. Wind is defined as a two-dimensional (horizontal) air velocity vector, with no vertical component. The wind speed is the magnitude of the wind velocity.</dd><dt><span>ancillary_variables :</span></dt><dd>qc_wind</dd><dt><span>fill_value :</span></dt><dd>-999.0</dd></dl></div><div class='xr-var-data'><pre>array([ 7.458254,  6.746425,  6.539074,  5.96052 ,  6.418178,  7.221876,
+        7.737162,  7.573333,  7.633076,  7.441326,  7.453791,  7.095899,
+        5.606482,  6.680887,  7.121944,  8.369134,  7.187523,  8.004765,
+        7.01309 ,  7.16889 ,  7.901505,  7.907693,  7.454755,  7.977231,
+        8.175237,  8.529461,  8.5829  ,  8.044894,  7.656481,  7.628151,
+        7.345017,  7.174885,  7.144834,  7.438159,  7.748279,  7.593844,
+        8.068183,  7.886201,  7.975935,  7.46299 ,  7.991475,  7.791154,
+        7.960605,  7.467907,  7.548323,  8.402843,  8.364287,  7.58281 ,
+        7.591013,  7.467282,  7.737547,  7.179323,  7.032081,  7.731208,
+        8.102445,  7.595999,  7.716357,  8.740314,  8.306416,  8.215628,
+        7.757661,  7.168608,  8.078878,  7.562119,  6.787815,  6.622304,
+        8.145062,  7.940752,  8.697734,  7.848798, 10.171852, 10.550839,
+       10.007464,  9.574115, 10.123688,  9.580773, 10.257906,  9.099793,
+       10.174257, 10.79212 ,  9.770777,  9.431552, 10.371331, 10.435259,
+        9.164804,  8.567307,  9.98039 ,  9.567735,  9.617631,  8.887784,
+        9.65284 ,  7.920105,  8.786873,  7.827348,  9.34751 ,  9.636571,
+       10.598319,  8.881645,  8.679284,  8.62849 ,  9.194669,  8.168247,
+        7.89751 ,  7.332719,  6.047311,  5.681761,  6.650561,  7.860155,
+        8.233351,  8.452109,  8.069345,  8.382711,  7.444493,  8.025787,
+        8.349299,  7.851192,  7.258345,  7.94272 ,  7.540714,  6.750785,
+        7.027056,  6.916419,  6.892858,  7.169417,  7.584641,  7.696899,
+        7.727747,  7.938693,  8.258958,  8.40424 ,  7.876606,  7.278122,
+        7.098591,  7.345128,  7.874727,  7.50493 ,  7.358619,  7.553433,
+        7.833355,  7.748296,  7.857221,  7.74098 ,  7.787577,  7.774127],
+      dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>wdir</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-6352779f-da7d-41a0-b264-0e196301d002' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-6352779f-da7d-41a0-b264-0e196301d002' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-2fc464ab-72a2-4148-bdb7-2493cda73d5d' class='xr-var-data-in' type='checkbox'><label for='data-2fc464ab-72a2-4148-bdb7-2493cda73d5d' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>wind_from_direction</dd><dt><span>long_name :</span></dt><dd>wind direction</dd><dt><span>units :</span></dt><dd>degree</dd><dt><span>comments :</span></dt><dd>Wind from North = 0°, from East = 90°, asf.</dd><dt><span>ancillary_variables :</span></dt><dd>qc_wind</dd><dt><span>fill_value :</span></dt><dd>-999.0</dd></dl></div><div class='xr-var-data'><pre>array([351.92078, 350.78186, 347.03317, 344.03827, 343.0956 , 344.30002,
+       344.74042, 342.85526, 341.11386, 339.568  , 340.39682, 343.5153 ,
+       347.96826, 349.49277, 341.51544, 339.87973, 338.0957 , 336.67905,
+       340.0248 , 338.85562, 334.66946, 336.36566, 337.13943, 335.80478,
+       336.00912, 336.11465, 332.75073, 330.07477, 331.7644 , 334.79388,
+       336.22675, 335.80807, 333.34122, 335.15717, 340.27225, 340.19125,
+       340.43353, 336.62918, 337.6599 , 339.02   , 340.48865, 342.04974,
+       344.60788, 342.6448 , 341.2937 , 340.11682, 342.51694, 343.41577,
+       349.08176, 349.7606 , 349.3549 , 344.2348 , 338.8509 , 338.26108,
+       338.76526, 341.73532, 346.55328, 347.60336, 345.02246, 345.1305 ,
+       346.34213, 349.85068, 351.50476, 349.8637 , 348.30325, 343.29684,
+       349.2866 , 344.47714, 347.99194, 347.69742, 350.59357, 344.17886,
+       353.66196, 351.0968 , 353.83142, 351.82355, 346.92184, 356.88065,
+       343.9687 , 344.26526, 344.74994, 343.50012, 343.7042 , 343.1692 ,
+       339.24948, 344.2914 , 351.5189 , 345.38336, 342.2012 , 344.34537,
+       345.37045, 337.88358, 346.7968 , 348.37265, 354.8234 , 351.65436,
+       349.37845, 344.65088, 355.03217, 350.69257, 348.30316, 349.29904,
+       349.85834, 348.71402, 347.52206, 346.34183, 345.3157 , 347.82556,
+       349.45886, 350.2444 , 348.37506, 349.72348, 346.9731 , 349.5423 ,
+       351.80917, 350.69284, 349.26166, 349.39996, 349.43616, 343.93726,
+       345.19104, 340.4981 , 340.73245, 338.72787, 337.95724, 338.6968 ,
+       334.43234, 334.34433, 338.34097, 340.51468, 334.99564, 332.44177,
+       331.68457, 329.99036, 331.3925 , 329.63913, 328.40686, 327.05286,
+       328.2029 , 326.55225, 324.95236, 324.7644 , 324.34842, 324.09058],
+      dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>qc_wind</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>int8</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-9d5faedf-e338-43cc-8031-286121de0047' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-9d5faedf-e338-43cc-8031-286121de0047' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-7cf18b8c-88c2-4ae9-9a0a-51e6dd81caf9' class='xr-var-data-in' type='checkbox'><label for='data-7cf18b8c-88c2-4ae9-9a0a-51e6dd81caf9' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>quality flag for wind speed and wind direction</dd><dt><span>flag_values :</span></dt><dd>0, 1 </dd><dt><span>flag_meanings :</span></dt><dd>quality_bad, quality_good </dd><dt><span>comments :</span></dt><dd>Quality flag is good if a minimum of 95% data with quality_good is used for calculation of the interval mean</dd></dl></div><div class='xr-var-data'><pre>array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      dtype=int8)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>wspeed_max</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-837bb7fb-b8b5-4b48-b525-16ecc2ccbf23' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-837bb7fb-b8b5-4b48-b525-16ecc2ccbf23' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-0b204436-8c4c-4061-a8af-ffed54c88e0f' class='xr-var-data-in' type='checkbox'><label for='data-0b204436-8c4c-4061-a8af-ffed54c88e0f' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>wind_speed_of_gust</dd><dt><span>long_name :</span></dt><dd>wind speed of gust</dd><dt><span>comments :</span></dt><dd>Maximum wind gust speed (3s moving average) in 10 minute interval</dd><dt><span>units :</span></dt><dd>m s-1</dd><dt><span>ancillary_variables :</span></dt><dd>qc_wind</dd><dt><span>fill_value :</span></dt><dd>-999.0</dd></dl></div><div class='xr-var-data'><pre>array([10.281253,  8.580601,  9.125542,  8.663624,  8.66165 ,  9.191647,
+       10.200068,  9.406288,  9.590785,  9.492208,  9.622737,  9.495669,
+        9.167959,  9.379064,  9.602893, 10.980871,  9.250713, 10.308161,
+       10.070229,  9.299747, 10.572906, 10.476089,  9.637316, 11.140931,
+       10.513787, 10.700126, 10.469744,  9.955491,  9.551153,  9.759561,
+        9.859457,  9.716874, 10.053163, 10.093128, 10.247419,  9.970764,
+       11.696876, 10.187757,  9.932454, 10.345992, 11.145244, 10.592967,
+       10.823243,  9.710837, 10.595885, 11.09355 , 11.008389, 10.672843,
+       11.267649, 10.850851, 10.235444, 10.462224,  9.759646, 10.160484,
+       10.223202, 10.151351, 10.901533, 11.292468, 11.172354, 10.941692,
+        9.944171, 10.328516, 11.467216, 10.179136, 10.418639,  9.31782 ,
+       12.040819, 10.381601, 11.752948, 12.802614, 13.183336, 14.583996,
+       13.245146, 13.792236, 14.281968, 12.029912, 13.290821, 12.4731  ,
+       12.873678, 12.714026, 12.514215, 12.153493, 13.316374, 13.264076,
+       11.949243, 12.080272, 13.641718, 13.11282 , 12.096841, 12.90926 ,
+       12.478229, 11.618241, 11.278157, 10.206961, 12.033229, 13.335336,
+       13.277282, 12.542967, 11.859374, 12.837366, 11.97961 , 10.960639,
+       10.479284,  9.596346,  7.320202,  7.988122,  8.349091, 10.73005 ,
+       10.188518, 10.870466, 10.482899, 10.519423, 10.112257, 10.26226 ,
+        9.613187,  9.437689,  8.927679,  9.865419,  9.967245,  8.727945,
+        9.010771,  9.480443,  8.429758,  8.131253,  9.114887,  9.161408,
+        8.688415,  8.479796,  8.970157,  9.031759,  8.951406,  8.395382,
+        8.159108,  8.072433,  8.577833,  8.271942,  7.98353 ,  8.086849,
+        8.490049,  8.383988,  8.753392,  8.699258,  8.579448,  8.619905],
+      dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>wspeed_min</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-10f46b94-9d21-401b-8f0f-ff96cdb08d34' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-10f46b94-9d21-401b-8f0f-ff96cdb08d34' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-a7a27e79-0c5a-4d7e-b1a8-94bc65262a19' class='xr-var-data-in' type='checkbox'><label for='data-a7a27e79-0c5a-4d7e-b1a8-94bc65262a19' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>wind speed of weakest wind</dd><dt><span>comments :</span></dt><dd>Minimum wind gust speed (3s moving average) in 10 minute interval</dd><dt><span>units :</span></dt><dd> m s-1</dd><dt><span>ancillary_variables :</span></dt><dd>qc_wind</dd><dt><span>fill_value :</span></dt><dd>-999.0</dd></dl></div><div class='xr-var-data'><pre>array([4.936088, 4.789322, 4.249738, 4.005743, 4.133615, 5.010169, 4.578554,
+       4.929878, 4.793741, 5.110533, 5.227323, 4.416572, 1.66597 , 2.009422,
+       4.67656 , 6.241668, 4.871503, 4.561455, 2.69018 , 4.895706, 5.463396,
+       5.175323, 4.901717, 4.951865, 5.430869, 6.079211, 6.633373, 6.069626,
+       4.945094, 4.627619, 4.360946, 4.187102, 4.921248, 4.743789, 5.272635,
+       4.605538, 4.983332, 5.000178, 4.74529 , 4.766037, 5.315006, 5.682901,
+       5.438931, 5.642118, 5.195615, 6.14115 , 5.573875, 5.170106, 4.872372,
+       4.746943, 5.474485, 4.655763, 4.562708, 5.2823  , 6.278733, 5.394748,
+       4.5614  , 5.32955 , 5.444853, 6.162983, 4.966886, 4.347052, 4.760547,
+       4.517393, 4.191257, 3.964315, 4.268274, 5.430525, 6.363318, 5.073452,
+       6.332109, 7.455491, 5.686284, 5.886103, 6.626248, 5.91172 , 6.879576,
+       5.276926, 6.017645, 6.794954, 6.544329, 5.717536, 7.048418, 7.622789,
+       5.850575, 5.468517, 7.777595, 6.536016, 7.287125, 5.491238, 5.304406,
+       4.372524, 5.106565, 5.08657 , 5.517389, 6.471836, 6.776274, 5.801929,
+       5.136548, 5.406935, 5.829271, 4.876373, 5.564925, 5.079967, 4.678572,
+       4.616959, 4.707528, 5.740712, 5.772037, 5.730098, 5.645906, 5.920045,
+       5.24423 , 5.11057 , 6.736835, 6.261558, 5.475653, 5.36536 , 5.750353,
+       4.504808, 4.957751, 5.678764, 4.897264, 5.981429, 5.96111 , 5.996001,
+       6.834019, 6.526874, 7.403542, 6.911222, 6.640508, 6.638097, 6.251104,
+       6.604519, 6.706247, 6.861369, 6.70188 , 6.983206, 7.012608, 6.969587,
+       7.160477, 6.958673, 7.070949, 7.072778], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>G</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-a5b70e6d-9848-470b-9b6e-93dea73d311c' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-a5b70e6d-9848-470b-9b6e-93dea73d311c' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-da940ae4-ecbd-4bb2-afe3-6d87b245041b' class='xr-var-data-in' type='checkbox'><label for='data-da940ae4-ecbd-4bb2-afe3-6d87b245041b' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>gust factor</dd><dt><span>comment :</span></dt><dd>The gust factor (G) is used to define the gust intensity Vi. For this data set G is defined as the 3-s wind speed maximum divided by that of the 10 min mean wind speed.</dd><dt><span>units :</span></dt><dd></dd><dt><span>ancillary_variables :</span></dt><dd>qc_wind</dd><dt><span>fill_value :</span></dt><dd>-999.0</dd></dl></div><div class='xr-var-data'><pre>array([1.378507, 1.271874, 1.39554 , 1.453501, 1.34955 , 1.272751, 1.318322,
+       1.242027, 1.256477, 1.275607, 1.290986, 1.338191, 1.635243, 1.403865,
+       1.348353, 1.312068, 1.287052, 1.287753, 1.435919, 1.297237, 1.338088,
+       1.324797, 1.292774, 1.396591, 1.286053, 1.25449 , 1.219838, 1.237492,
+       1.24746 , 1.279414, 1.342333, 1.35429 , 1.407053, 1.356939, 1.322541,
+       1.313006, 1.449753, 1.291846, 1.245303, 1.386307, 1.394642, 1.359615,
+       1.359601, 1.300342, 1.40374 , 1.320214, 1.316118, 1.407505, 1.484341,
+       1.453119, 1.322828, 1.457272, 1.387875, 1.314217, 1.261743, 1.336408,
+       1.412782, 1.291998, 1.345027, 1.331815, 1.281852, 1.440798, 1.419407,
+       1.346069, 1.534903, 1.407036, 1.478297, 1.307383, 1.351266, 1.631156,
+       1.29606 , 1.382259, 1.323527, 1.440576, 1.410748, 1.25563 , 1.295666,
+       1.370701, 1.265319, 1.178084, 1.28078 , 1.288599, 1.28396 , 1.271083,
+       1.303819, 1.410043, 1.366852, 1.370525, 1.257778, 1.452472, 1.2927  ,
+       1.46693 , 1.283523, 1.304013, 1.287319, 1.383826, 1.252772, 1.412235,
+       1.3664  , 1.487788, 1.302887, 1.341859, 1.32691 , 1.308702, 1.210489,
+       1.405924, 1.255396, 1.365119, 1.237469, 1.286125, 1.299101, 1.254895,
+       1.358354, 1.278661, 1.151376, 1.202071, 1.229988, 1.242071, 1.321791,
+       1.292879, 1.282297, 1.370715, 1.22297 , 1.134158, 1.201756, 1.190273,
+       1.124314, 1.06816 , 1.086112, 1.074667, 1.136455, 1.153509, 1.149398,
+       1.099019, 1.089286, 1.102201, 1.084922, 1.070619, 1.083833, 1.082043,
+       1.114057, 1.123793, 1.101684, 1.108794], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>lon</span></div><div class='xr-var-dims'>()</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-e6d6ea79-74f8-4eb3-aae2-03b33176aa8b' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-e6d6ea79-74f8-4eb3-aae2-03b33176aa8b' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-ede35eef-ff9c-41d7-9abd-6699f43a90a2' class='xr-var-data-in' type='checkbox'><label for='data-ede35eef-ff9c-41d7-9abd-6699f43a90a2' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>comments :</span></dt><dd>Longitude of instrument location</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>long_name :</span></dt><dd>longitude </dd></dl></div><div class='xr-var-data'><pre>array(14.1367)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>lat</span></div><div class='xr-var-dims'>()</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-4fdfb3d5-b5c0-48ff-a602-fb05cdf809c2' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-4fdfb3d5-b5c0-48ff-a602-fb05cdf809c2' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-fe01560b-69dc-4e6b-9c4c-497461122f26' class='xr-var-data-in' type='checkbox'><label for='data-fe01560b-69dc-4e6b-9c4c-497461122f26' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>comments :</span></dt><dd>Latitude of instrument location</dd><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>long_name :</span></dt><dd>latitude </dd></dl></div><div class='xr-var-data'><pre>array(52.165798)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>height</span></div><div class='xr-var-dims'>()</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-b7150710-08a7-46e9-88b5-193ef89ea077' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-b7150710-08a7-46e9-88b5-193ef89ea077' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-efde2bac-806b-4413-918f-54a63de60d0b' class='xr-var-data-in' type='checkbox'><label for='data-efde2bac-806b-4413-918f-54a63de60d0b' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>m</dd><dt><span>comments :</span></dt><dd>Height of instrument above ground</dd><dt><span>standard_name :</span></dt><dd>height</dd><dt><span>long_name :</span></dt><dd>height</dd></dl></div><div class='xr-var-data'><pre>array(90.3)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>zsl</span></div><div class='xr-var-dims'>()</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-ae5e479b-f31e-4d62-9919-fd1bee3a9e8c' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-ae5e479b-f31e-4d62-9919-fd1bee3a9e8c' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-a403708b-a1c3-43ce-8893-6417dc1d6535' class='xr-var-data-in' type='checkbox'><label for='data-a403708b-a1c3-43ce-8893-6417dc1d6535' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>comments :</span></dt><dd>Altitude above mean sea level of boundary layer field site</dd><dt><span>units :</span></dt><dd>m</dd><dt><span>standard_name :</span></dt><dd>altitude</dd><dt><span>long_name :</span></dt><dd>altitude</dd></dl></div><div class='xr-var-data'><pre>array(73.)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>time_bnds</span></div><div class='xr-var-dims'>(time, nv)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-6dfc5b67-f212-46e2-91fb-11c0dfae926b' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-6dfc5b67-f212-46e2-91fb-11c0dfae926b' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-a3a7c50b-98c6-4743-bd4f-9d559b8e5366' class='xr-var-data-in' type='checkbox'><label for='data-a3a7c50b-98c6-4743-bd4f-9d559b8e5366' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>time boundaries</dd></dl></div><div class='xr-var-data'><pre>array([[&#x27;2021-08-31T00:00:00.000000000&#x27;, &#x27;2021-08-31T00:10:00.000000000&#x27;],
+       [&#x27;2021-08-31T00:10:00.000000000&#x27;, &#x27;2021-08-31T00:20:00.000000000&#x27;],
+       [&#x27;2021-08-31T00:20:00.000000000&#x27;, &#x27;2021-08-31T00:30:00.000000000&#x27;],
+       ...,
+       [&#x27;2021-08-31T23:30:00.000000000&#x27;, &#x27;2021-08-31T23:40:00.000000000&#x27;],
+       [&#x27;2021-08-31T23:40:00.000000000&#x27;, &#x27;2021-08-31T23:50:00.000000000&#x27;],
+       [&#x27;2021-08-31T23:50:00.000000000&#x27;, &#x27;2021-09-01T00:00:00.000000000&#x27;]],
+      dtype=&#x27;datetime64[ns]&#x27;)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-33eba5ea-9a05-4f74-b3d0-7f11647cb7fa' class='xr-section-summary-in' type='checkbox'  ><label for='section-33eba5ea-9a05-4f74-b3d0-7f11647cb7fa' class='xr-section-summary' >Attributes: <span>(12)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>title :</span></dt><dd>Ultrasonic anemometer data with wind and gust products, height: 90.3 m</dd><dt><span>description :</span></dt><dd>Daily netCDF file with quality checked data for 10 min mean</dd><dt><span>institution :</span></dt><dd>Deutscher Wetterdienst, Meteorologisches Observatorium Lindenberg / Richard-Assmann-Observatorium</dd><dt><span>contact_person :</span></dt><dd>Carola Detring, carola.detring@dwd.de</dd><dt><span>site_location :</span></dt><dd>Lindenberg, Boundary-layer field site Falkenberg</dd><dt><span>source :</span></dt><dd>instrument: usa1_standard_1 , manufacturer: metek , StationName : 90m, Logger ID: AIU-1007, Logger software version: 8.0.0 , measurement site: GMF</dd><dt><span>history :</span></dt><dd>Data processed with Sonic_data_to_l0_l1_l2_v01.py</dd><dt><span>processing_date :</span></dt><dd>Created Fri Jan 13 21:27:37 2023</dd><dt><span>Conventions :</span></dt><dd>CF-1.8</dd><dt><span>author :</span></dt><dd>Carola Detring, carola.detring@dwd.de</dd><dt><span>comments :</span></dt><dd> </dd><dt><span>licence :</span></dt><dd>For non-commercial use only. This data is subject to the SAMD data policy to be found at doi.org/10.25592/uhhfdm.9824 and in the SAMD Observation Data Product standard v2.0.</dd></dl></div></li></ul></div></div></div></div>
+</div>
+</section>
+<section id="using-netcdf4">
+<h3>3.2 Using netCDF4<a class="headerlink" href="#using-netcdf4" title="Permalink to this heading">#</a></h3>
+<p>Datasets can also be opened using the netCDF4 library directly. Besides a local filename, the <code class="docutils literal notranslate"><span class="pre">Dataset()</span></code> function takes an OPeNDAP-URL as argument.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mpl_toolkits.basemap</span> <span class="kn">import</span> <span class="n">Basemap</span>
+<span class="kn">from</span> <span class="nn">netCDF4</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="s1">&#39;http://icdc.cen.uni-hamburg.de/thredds/dodsC/ecco2-temp-all&#39;</span><span class="p">)</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;THETA&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,:,:]</span> <span class="c1"># first time step, first depth level</span>
+<span class="n">lat</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;LATITUDE_T&#39;</span><span class="p">][:]</span>
+<span class="n">lon</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;LONGITUDE_T&#39;</span><span class="p">][:]</span>
+<span class="n">theta</span><span class="p">[</span><span class="n">theta</span><span class="o">&lt;-</span><span class="mi">1000</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">NaN</span>
+<span class="c1"># basemap instance with lat/lon corner values</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">Basemap</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">&#39;cyl&#39;</span><span class="p">,</span><span class="n">llcrnrlat</span><span class="o">=-</span><span class="mi">90</span><span class="p">,</span><span class="n">llcrnrlon</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">urcrnrlat</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span><span class="n">urcrnrlon</span><span class="o">=</span><span class="mi">360</span><span class="p">,</span><span class="n">resolution</span><span class="o">=</span><span class="s1">&#39;l&#39;</span><span class="p">)</span>
+<span class="c1"># meshgrid returns coordinate matrices from 2 vectors</span>
+<span class="c1"># basemap instance can take 2 arguments to convert lat,lon matrices to x,y</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">m</span><span class="p">(</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span><span class="n">lat</span><span class="p">))</span>
+<span class="c1"># min, max, step width for color bar (unit Kelvin)</span>
+<span class="n">ps</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">35</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span><span class="n">ps</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">drawcoastlines</span><span class="p">()</span>
+<span class="n">m</span><span class="o">.</span><span class="n">drawmeridians</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">m</span><span class="o">.</span><span class="n">drawparallels</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">90</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;ECCO2&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">shrink</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/_j/n5kznlm13fbgm7njdx7g82s00000gq/T/ipykernel_80867/1717365748.py:9: UserWarning: WARNING: missing_value not used since it
+cannot be safely cast to variable data type
+  theta = dataset.variables[&#39;THETA&#39;][0,0,:,:] # first time step, first depth level
+</pre></div>
+</div>
+<img alt="_images/4062e899b0535f119373e2534c7577d2aed63113db705a9024e36cd4c170d419.png" src="_images/4062e899b0535f119373e2534c7577d2aed63113db705a9024e36cd4c170d419.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="weitere-materialien">
+<h2>Weitere Materialien<a class="headerlink" href="#weitere-materialien" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Example for loading climate data from the Climate model Intercomparison project (CMIP6): <a class="reference external" href="http://gallery.pangeo.io/repos/pangeo-gallery/cmip6/search_and_load_with_esgf_opendap.html">http://gallery.pangeo.io/repos/pangeo-gallery/cmip6/search_and_load_with_esgf_opendap.html</a></p></li>
+<li><p>Siphon-Documentation: <a class="reference external" href="https://unidata.github.io/siphon/latest/api/index.html">https://unidata.github.io/siphon/latest/api/index.html</a></p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-thredds">What is THREDDS?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datasets-overview">1. Datasets Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#browsing-the-server-catalog-with-siphon">2. Browsing the Server Catalog with siphon</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#opening-datasets-via-opendap">3. Opening datasets via OPeNDAP</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-xarray">3.1 Using Xarray</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-netcdf4">3.2 Using netCDF4</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#weitere-materialien">Weitere Materialien</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Christopher Purr, Remon Sadikni (ICDC, NFDI4Earth, Uni Hamburg)
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

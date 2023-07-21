@@ -1,0 +1,807 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Creating cf-compliant netCDF files in R &#8212; How to create publishable netcdf-data</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'radklim_conversion';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Manipulating attributes and variable names with NCO" href="nco.html" />
+    <link rel="prev" title="Handling netcdf data with Xarray" href="xarray_create_netcdf.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">How to create publishable netcdf-data</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Introduction
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="netcdf_format.html">The netCDF data format</a></li>
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="cf-conventions.html">The NetCDF Climate and Forecast (CF) Metadata Conventions</a></li>
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="xarray_create_netcdf.html">Handling netcdf data with Xarray</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Creating cf-compliant netCDF files in R</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nco.html">Manipulating attributes and variable names with NCO</a></li>
+
+
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2Fradklim_conversion.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/radklim_conversion.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Creating cf-compliant netCDF files in R</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#learning-objectives">Learning Objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction">Introduction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#packages">Packages</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-the-data">1. Download the data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#untar-the-data">2. Untar the data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#read-the-data">3. Read the data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metadata">3.1. Metadata</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#binary-data">3.2. Binary data</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#process-data">4. Process data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#calculate-the-grid-information">4.1. Calculate the grid information</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#writing-the-netcdf-file">4.2. Writing the netCDF-file</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#checking-if-the-netcdf-file-conforms-to-the-cf-standard">5. Checking if the netcdf-file conforms to the cf-Standard</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-material">Further material</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <p><a id="top"></a></p>
+<section class="tex2jax_ignore mathjax_ignore" id="creating-cf-compliant-netcdf-files-in-r">
+<h1>Creating cf-compliant netCDF files in R<a class="headerlink" href="#creating-cf-compliant-netcdf-files-in-r" title="Permalink to this heading">#</a></h1>
+<hr class="docutils" />
+<section id="learning-objectives">
+<h2>Learning Objectives<a class="headerlink" href="#learning-objectives" title="Permalink to this heading">#</a></h2>
+<p>At the end of this tutorial, learners will be able to:</p>
+<ul class="simple">
+<li><p>read binary data in R</p></li>
+<li><p>explain the netCDF data format and the “Climate and Forecast (CF)” meta data standard</p></li>
+<li><p>write netCDF data in R</p></li>
+</ul>
+<p>As an example we will use precipitation data from a gauge-adjusted radardataset of Deutscher Wetterdienst (DWD).</p>
+</section>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h2>
+<p>The “radar climatology” of Deutscher Wetterdienst (DWD) contains precipitation measurements based on radardata which have been quality-controlled and adjusted. It offers continuous observations of precipitation in space and time with a spatial resolution of 1 km * 1km and a temporal resolution of 1 h (the so-called RW-product) or 5 min (YW-product). The access to the dataset and further information are available here:
+DOI:<em>10.5676/DWD/RADKLIM_RW_V2017.002</em></p>
+<p>The data is available in a binary format which will be converted to the netCDF format in this tutorial.</p>
+</section>
+<section id="packages">
+<h2>Packages<a class="headerlink" href="#packages" title="Permalink to this heading">#</a></h2>
+<p>The following r-packages are required:</p>
+<ul class="simple">
+<li><p>ncdf4 (handling netcdf data)</p></li>
+<li><p>chron (handling date and time values)</p></li>
+<li><p>fields (plotting data)</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">#install.packages(&quot;ncdf4&quot;)</span>
+<span class="c1">#install.packages(&quot;chron&quot;)</span>
+<span class="c1">#install.packages(&quot;fields&quot;)</span>
+
+<span class="nf">library</span><span class="p">(</span><span class="n">ncdf4</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">chron</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="download-the-data">
+<h2>1. Download the data<a class="headerlink" href="#download-the-data" title="Permalink to this heading">#</a></h2>
+<p>We start by downloading the data from the opendata-Server of Deutscher Wetterdienst. We arbitrarily choose the data for January 2001 as example data which corresponds to the file <code class="docutils literal notranslate"><span class="pre">RW2017.002_200101.tar.gz</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">system</span><span class="p">(</span><span class="s">&quot;mkdir ./data&quot;</span><span class="p">)</span>
+<span class="nf">system</span><span class="p">(</span><span class="s">&quot;wget https://opendata.dwd.de/climate_environment/CDC/grids_germany/hourly/radolan/reproc/2017_002/bin/2001/RW2017.002_200101.tar.gz&quot;</span><span class="p">,</span> <span class="n">intern</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"></div></div>
+</div>
+</section>
+<section id="untar-the-data">
+<h2>2. Untar the data<a class="headerlink" href="#untar-the-data" title="Permalink to this heading">#</a></h2>
+<p>The data is stored as monthly tar-archives. By untaring the data, files will be created which adhere to the following naming convention:
+<code class="docutils literal notranslate"><span class="pre">raa01-rw2017.002_10000-************-dwd---bin</span></code>
+where <code class="docutils literal notranslate"><span class="pre">*</span></code> serves as wildcard to denote the time and date of the data in the format <code class="docutils literal notranslate"><span class="pre">YYMMDDHHMM</span></code>.</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input above-output-prompt docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">system</span><span class="p">(</span><span class="s">&quot;tar -xvf RW2017.002_200101.tar.gz -C data&quot;</span><span class="p">,</span> <span class="n">intern</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<details class="hide below-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell output</span>
+<span class="expanded">Hide code cell output</span>
+</summary>
+<div class="cell_output docutils container">
+<div class="output text_html"><style>
+.list-inline {list-style: none; margin:0; padding: 0}
+.list-inline>li {display: inline-block}
+.list-inline>li:not(:last-child)::after {content: "\00b7"; padding: 0 .5ex}
+</style>
+<ol class=list-inline><li>'raa01-rw2017.002_10000-0101312250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101312350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101312150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101312050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101311950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101311850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101311750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101311650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101311550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101311450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101311350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101311250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101311150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101311050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101310950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101310750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101310850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101310450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101310650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101310550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101310350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101310250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101310150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101310050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101302350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101302250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101302150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101302050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101301950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101301850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101301750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101301450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101301550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101301350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101301650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101301150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101301250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101300950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101301050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101300850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101300750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101300650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101300450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101300250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101300350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101300150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101300550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101300050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101292350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101292250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101292050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101292150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101291850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101291950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101291750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101291650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101291550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101291450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101291350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101291250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101291150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101291050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101290850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101290750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101290650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101290550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101290450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101290350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101290950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101290250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101290150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101290050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101282350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101282250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101282150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101282050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101281950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101281850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101281750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101281650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101281450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101281550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101281250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101281150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101281350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101281050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101280950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101280850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101280750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101280550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101280650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101280450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101280350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101280250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101280150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101280050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101272350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101272250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101272050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101272150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101271950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101271850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101271750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101271650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101271550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101271450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101271350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101271250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101271150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101270950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101271050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101270850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101270750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101270650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101270550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101270450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101270350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101270250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101270150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101270050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101262250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101262150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101262350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101261950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101262050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101261850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101261750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101261650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101261450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101261550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101261250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101261150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101261350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101261050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101260950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101260850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101260750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101260650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101260550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101260450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101260350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101260250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101260150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101260050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101252350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101252250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101252150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101252050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101251950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101251850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101251750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101251650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101251550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101251450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101251350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101251250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101251050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101251150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101250950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101250850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101250750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101250650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101250550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101250350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101250450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101250250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101250150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101250050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101242350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101242150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101242250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101242050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101241950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101241850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101241750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101241650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101241550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101241350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101241450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101241150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101241250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101241050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101240950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101240850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101240750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101240650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101240550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101240450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101240250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101240350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101240150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101240050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101232350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101232250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101231950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101231850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101232150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101232050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101231750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101231650-dwd---bin'</li><li>⋯</li><li>'raa01-rw2017.002_10000-0101091350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101091250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101091150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101091050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101090850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101090950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101090750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101090550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101090450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101090350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101090650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101090250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101090150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101090050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101082350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101082250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101082150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101082050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101081950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101081850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101081750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101081650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101081550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101081450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101081350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101081250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101081150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101081050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101080850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101080950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101080750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101080650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101080550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101080450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101080350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101080250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101080150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101080050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101072350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101072250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101072150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101072050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101071850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101071750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101071950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101071650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101071550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101071450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101071350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101071150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101071250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101070950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101071050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101070850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101070650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101070750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101070450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101070350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101070550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101070250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101070050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101070150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101062350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101062150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101062250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101062050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101061950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101061850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101061750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101061650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101061550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101061450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101061350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101061250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101061150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101061050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101060950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101060850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101060750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101060650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101060550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101060450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101060350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101060250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101060150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101060050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101052350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101052250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101052150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101051950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101052050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101051850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101051750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101051650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101051550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101051450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101051350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101051250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101051150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101051050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101050950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101050850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101050650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101050750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101050550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101050450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101050350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101050150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101050050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101042350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101050250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101042250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101042150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101042050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101041950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101041850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101041750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101041650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101041550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101041450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101041350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101041150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101041250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101041050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101040850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101040950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101040750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101040650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101040550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101040350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101040450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101040250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101040150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101040050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101032350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101032250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101032150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101032050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101031850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101031950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101031750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101031550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101031650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101031450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101031150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101031250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101031050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101030950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101030850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101030750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101030650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101030550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101030350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101030450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101030250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101031350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101030050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101030150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101022350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101022150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101022250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101022050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101021950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101021850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101021750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101021550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101021650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101021450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101021350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101021150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101021250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101021050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101020950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101020850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101020650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101020550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101020450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101020750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101020250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101020350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101020150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101020050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101012250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101012350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101012150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101012050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101011950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101011850-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101011750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101011650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101011550-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101011450-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101011350-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101011250-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101011150-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101011050-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101010950-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101010750-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101010650-dwd---bin'</li><li>'raa01-rw2017.002_10000-0101010850-dwd---bin'</li></ol>
+</div></div>
+</details>
+</div>
+</section>
+<section id="read-the-data">
+<h2>3. Read the data<a class="headerlink" href="#read-the-data" title="Permalink to this heading">#</a></h2>
+<p>The data are stored in the so-called <code class="docutils literal notranslate"><span class="pre">RADKLIM-Komposit</span></code> format. In this format, every file consists of an ASCII part which contains meta data and a binary part which contains the actual precipitation data. The format is described in detail in the following document:
+<a class="reference external" href="https://www.dwd.de/DE/leistungen/radarklimatologie/radklim_kompositformat_1_0.pdf">https://www.dwd.de/DE/leistungen/radarklimatologie/radklim_kompositformat_1_0.pdf</a></p>
+<section id="metadata">
+<h3>3.1. Metadata<a class="headerlink" href="#metadata" title="Permalink to this heading">#</a></h3>
+<p>We extract the metadata <code class="docutils literal notranslate"><span class="pre">date</span></code> and <code class="docutils literal notranslate"><span class="pre">time</span></code> from the file names all files for January and save it in the <code class="docutils literal notranslate"><span class="pre">time</span> <span class="pre">vector</span></code> variable.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">filelist_name_only</span><span class="o">&lt;-</span><span class="nf">dir</span><span class="p">(</span><span class="s">&quot;./data&quot;</span><span class="p">,</span><span class="n">pattern</span><span class="o">=</span><span class="s">&quot;raa01-rw2017&quot;</span><span class="p">)</span>
+<span class="n">filelist_full_path</span><span class="o">&lt;-</span><span class="nf">normalizePath</span><span class="p">(</span><span class="nf">dir</span><span class="p">(</span><span class="s">&quot;./data&quot;</span><span class="p">,</span><span class="n">pattern</span><span class="o">=</span><span class="s">&quot;raa01-rw2017&quot;</span><span class="p">,</span><span class="n">full.names</span> <span class="o">=</span> <span class="bp">T</span><span class="p">))</span>
+<span class="n">nfiles</span><span class="o">&lt;-</span><span class="nf">length</span><span class="p">(</span><span class="n">filelist_name_only</span><span class="p">)</span>
+<span class="n">time_vector</span><span class="o">&lt;-</span><span class="nf">vector</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s">&quot;double&quot;</span><span class="p">,</span><span class="n">length</span><span class="o">=</span><span class="n">nfiles</span><span class="p">)</span>
+
+<span class="nf">for</span><span class="p">(</span><span class="n">i</span> <span class="n">in</span> <span class="m">1</span><span class="o">:</span><span class="n">nfiles</span><span class="p">){</span>
+    <span class="n">year</span><span class="o">&lt;-</span><span class="nf">substr</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">filelist_name_only</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span><span class="m">24</span><span class="p">,</span><span class="m">25</span><span class="p">)</span>
+    <span class="n">month</span><span class="o">&lt;-</span><span class="nf">substr</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">filelist_name_only</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span><span class="m">26</span><span class="p">,</span><span class="m">27</span><span class="p">)</span>
+    <span class="n">day</span><span class="o">&lt;-</span><span class="nf">substr</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">filelist_name_only</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span><span class="m">28</span><span class="p">,</span><span class="m">29</span><span class="p">)</span>
+    <span class="n">hour</span><span class="o">&lt;-</span><span class="nf">substr</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">filelist_name_only</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span><span class="m">30</span><span class="p">,</span><span class="m">31</span><span class="p">)</span>
+    <span class="n">minute</span><span class="o">&lt;-</span><span class="nf">substr</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">filelist_name_only</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span><span class="m">32</span><span class="p">,</span><span class="m">33</span><span class="p">)</span>
+    
+    <span class="n">time_vector</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="nf">chron</span><span class="p">(</span><span class="nf">dates</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="n">month</span><span class="p">,</span><span class="s">&quot;/&quot;</span><span class="p">,</span><span class="n">day</span><span class="p">,</span><span class="s">&quot;/20&quot;</span><span class="p">,</span><span class="n">year</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">))),</span><span class="n">times</span><span class="o">=</span><span class="nf">times</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="n">hour</span><span class="p">,</span><span class="s">&quot;:&quot;</span><span class="p">,</span><span class="n">minute</span><span class="p">,</span><span class="s">&quot;:00&quot;</span><span class="p">))),</span><span class="n">origin</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">01</span><span class="p">,</span><span class="m">01</span><span class="p">,</span><span class="m">1900</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="binary-data">
+<h3>3.2. Binary data<a class="headerlink" href="#binary-data" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">radarmatrix</span><span class="o">&lt;-</span><span class="nf">array</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="m">0</span><span class="p">,</span><span class="n">dim</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">1100</span><span class="p">,</span><span class="m">900</span><span class="p">,</span><span class="n">nfiles</span><span class="p">))</span>
+
+<span class="c1">#Loop over 24 files (equal to 1 day)</span>
+
+<span class="nf">for</span><span class="p">(</span><span class="n">i</span> <span class="n">in</span> <span class="m">1</span><span class="o">:</span><span class="n">nfiles</span><span class="p">){</span>
+    <span class="n">con</span><span class="o">=</span><span class="nf">file</span><span class="p">(</span><span class="n">filelist_full_path</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="s">&quot;rb&quot;</span><span class="p">)</span>
+    <span class="n">header1</span><span class="o">&lt;-</span><span class="nf">readChar</span><span class="p">(</span><span class="n">con</span><span class="p">,</span><span class="m">92</span><span class="p">)</span>
+    <span class="n">length_of_stations_in_header</span><span class="o">&lt;-</span><span class="nf">as.numeric</span><span class="p">(</span><span class="nf">readChar</span><span class="p">(</span><span class="n">con</span><span class="p">,</span><span class="m">2</span><span class="p">))</span>
+    <span class="n">stations</span><span class="o">&lt;-</span><span class="nf">readChar</span><span class="p">(</span><span class="n">con</span><span class="p">,</span><span class="n">length_of_stations_in_header</span><span class="p">)</span>
+    <span class="n">ext</span><span class="o">&lt;-</span><span class="nf">readChar</span><span class="p">(</span><span class="n">con</span><span class="p">,</span><span class="m">1</span><span class="p">)</span>
+    <span class="n">x</span><span class="o">&lt;-</span><span class="nf">readBin</span><span class="p">(</span><span class="n">con</span><span class="p">,</span><span class="s">&quot;integer&quot;</span><span class="p">,</span><span class="n">n</span><span class="o">=</span><span class="m">990000</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="n">signed</span><span class="o">=</span><span class="bp">F</span><span class="p">,</span><span class="n">endian</span><span class="o">=</span><span class="s">&quot;little&quot;</span><span class="p">)</span>
+    <span class="nf">close</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">temp</span><span class="o">&lt;-</span><span class="nf">matrix</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">ncol</span><span class="o">=</span><span class="p">(</span><span class="m">900</span><span class="p">),</span><span class="n">nrow</span><span class="o">=</span><span class="m">1100</span><span class="p">,</span><span class="n">byrow</span><span class="o">=</span><span class="bp">T</span><span class="p">)</span>
+    <span class="n">temp</span><span class="p">[(</span><span class="nf">which</span><span class="p">(</span><span class="n">temp</span><span class="o">==</span><span class="m">10692</span><span class="p">))]</span><span class="o">&lt;-</span><span class="kc">NA</span>
+    <span class="n">radarmatrix</span><span class="p">[,,</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;-</span><span class="n">temp</span>
+<span class="p">}</span>
+
+<span class="n">radarmatrix</span><span class="p">[</span><span class="nf">which</span><span class="p">(</span><span class="n">radarmatrix</span><span class="o">&gt;</span><span class="m">1000</span><span class="p">)]</span><span class="o">&lt;-</span><span class="kc">NA</span>
+<span class="n">radarmatrix</span><span class="o">&lt;-</span><span class="n">radarmatrix</span><span class="o">/</span><span class="m">10</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="process-data">
+<h2>4. Process data<a class="headerlink" href="#process-data" title="Permalink to this heading">#</a></h2>
+<p>In this section, the <code class="docutils literal notranslate"><span class="pre">radarmatrix</span></code> which we just stored will be saved as netCDF file.</p>
+<section id="calculate-the-grid-information">
+<h3>4.1. Calculate the grid information<a class="headerlink" href="#calculate-the-grid-information" title="Permalink to this heading">#</a></h3>
+<p>First of all, we need to calculate the grid information, i.e. the longitude and latitude values for our data. The data is stored in polar stereographic projection.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">x.vec</span> <span class="o">&lt;-</span> <span class="nf">seq</span><span class="p">(</span><span class="m">-442.962</span><span class="p">,</span><span class="m">456.038</span><span class="p">,</span><span class="m">1</span><span class="p">)</span>    <span class="c1">#length(900)</span>
+<span class="n">y.vec</span> <span class="o">&lt;-</span> <span class="nf">seq</span><span class="p">(</span><span class="m">-4758.145</span><span class="p">,</span><span class="m">-3659.145</span><span class="p">,</span><span class="m">1</span><span class="p">)</span> <span class="c1">#length(1100)</span>
+<span class="n">nx</span> <span class="o">&lt;-</span> <span class="nf">length</span><span class="p">(</span><span class="n">x.vec</span><span class="p">)</span>      <span class="c1">#x-direction of whole GER-Radardomain  #old domain: 900 new: 1100</span>
+<span class="n">ny</span> <span class="o">&lt;-</span> <span class="nf">length</span><span class="p">(</span><span class="n">y.vec</span><span class="p">)</span>      <span class="c1">#y-direction of whole GER-Radardomain  # old and new: 900</span>
+
+<span class="n">lon0</span><span class="o">=</span><span class="m">10</span>
+<span class="n">lat0</span><span class="o">=</span><span class="m">60</span> <span class="c1">#Reference Point in Coordinates</span>
+<span class="n">EARTH_R</span><span class="o">=</span><span class="m">6370.04</span> <span class="c1">#EARH RADIUS</span>
+
+<span class="n">lat</span><span class="o">=</span><span class="nf">array</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">))</span>
+<span class="n">lon</span><span class="o">=</span><span class="nf">array</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">))</span>
+
+<span class="n">xbounds</span><span class="o">=</span><span class="nf">array</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">,</span><span class="m">4</span><span class="p">))</span>
+<span class="n">ybounds</span><span class="o">=</span><span class="nf">array</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">,</span><span class="m">4</span><span class="p">))</span>
+
+<span class="n">x.v</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">-0.5</span><span class="p">,</span><span class="m">0.5</span><span class="p">,</span><span class="m">0.5</span><span class="p">,</span><span class="m">-0.5</span><span class="p">)</span>
+<span class="n">y.v</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">-0.5</span><span class="p">,</span><span class="m">-0.5</span><span class="p">,</span><span class="m">0.5</span><span class="p">,</span><span class="m">0.5</span><span class="p">)</span>
+
+
+<span class="nf">for </span><span class="p">(</span><span class="n">i</span> <span class="n">in</span> <span class="m">1</span><span class="o">:</span><span class="n">nx</span><span class="p">){</span>
+        <span class="nf">for </span><span class="p">(</span><span class="n">j</span> <span class="n">in</span> <span class="m">1</span><span class="o">:</span><span class="n">ny</span><span class="p">){</span>
+                <span class="n">lon</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="m">180</span><span class="o">/</span><span class="kc">pi</span><span class="o">*</span><span class="nf">atan</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">x.vec</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">y.vec</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span><span class="o">+</span><span class="n">lon0</span><span class="p">)</span>
+                <span class="n">lat</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="m">180</span><span class="o">/</span><span class="kc">pi</span><span class="o">*</span><span class="nf">asin</span><span class="p">((</span><span class="n">EARTH_R</span><span class="o">^</span><span class="m">2</span><span class="o">*</span><span class="p">(</span><span class="m">1</span><span class="o">+</span><span class="nf">sin</span><span class="p">(</span><span class="kc">pi</span><span class="o">/</span><span class="m">180</span><span class="o">*</span><span class="n">lat0</span><span class="p">))</span><span class="o">^</span><span class="m">2</span><span class="o">-</span><span class="p">(</span><span class="n">x.vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">^</span><span class="m">2</span><span class="o">+</span><span class="n">y.vec</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">^</span><span class="m">2</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="n">EARTH_R</span><span class="o">^</span><span class="m">2</span><span class="o">*</span><span class="p">(</span><span class="m">1</span><span class="o">+</span><span class="nf">sin</span><span class="p">(</span><span class="kc">pi</span><span class="o">/</span><span class="m">180</span><span class="o">*</span><span class="n">lat0</span><span class="p">))</span><span class="o">^</span><span class="m">2</span><span class="o">+</span><span class="p">(</span><span class="n">x.vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">^</span><span class="m">2</span><span class="o">+</span><span class="n">y.vec</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">^</span><span class="m">2</span><span class="p">)))</span>
+                <span class="nf">for </span><span class="p">(</span><span class="n">k</span> <span class="n">in</span> <span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">){</span>
+                    <span class="n">xbounds</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="m">180</span><span class="o">/</span><span class="kc">pi</span><span class="o">*</span><span class="nf">atan</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">x.vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="n">x.v</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">y.vec</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="n">y.v</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span><span class="o">+</span><span class="n">lon0</span><span class="p">)</span>
+                    <span class="n">ybounds</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="m">180</span><span class="o">/</span><span class="kc">pi</span><span class="o">*</span><span class="nf">asin</span><span class="p">((</span><span class="n">EARTH_R</span><span class="o">^</span><span class="m">2</span><span class="o">*</span><span class="p">(</span><span class="m">1</span><span class="o">+</span><span class="nf">sin</span><span class="p">(</span><span class="kc">pi</span><span class="o">/</span><span class="m">180</span><span class="o">*</span><span class="n">lat0</span><span class="p">))</span><span class="o">^</span><span class="m">2</span><span class="o">-</span><span class="p">((</span><span class="n">x.vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="n">x.v</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">^</span><span class="m">2</span><span class="o">+</span><span class="n">y.vec</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">^</span><span class="m">2</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="n">EARTH_R</span><span class="o">^</span><span class="m">2</span><span class="o">*</span><span class="p">(</span><span class="m">1</span><span class="o">+</span><span class="nf">sin</span><span class="p">(</span><span class="kc">pi</span><span class="o">/</span><span class="m">180</span><span class="o">*</span><span class="n">lat0</span><span class="p">))</span><span class="o">^</span><span class="m">2</span><span class="o">+</span><span class="p">((</span><span class="n">x.vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="n">x.v</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">^</span><span class="m">2</span><span class="o">+</span><span class="p">(</span><span class="n">y.vec</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="n">y.v</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">^</span><span class="m">2</span><span class="p">)))</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="writing-the-netcdf-file">
+<h3>4.2. Writing the netCDF-file<a class="headerlink" href="#writing-the-netcdf-file" title="Permalink to this heading">#</a></h3>
+<p>Writing the netcdf file consists of the following steps:</p>
+<ol class="arabic simple">
+<li><p>Defining the dimensions of the netcdf-file (function call: ncdim_def)</p></li>
+<li><p>Defining the variables, both coordinate and data variables (function call: ncvar_def)</p></li>
+<li><p>Creating the netcdf-File (function call: nc_create)</p></li>
+<li><p>Inserting the variables into the netCDF-file</p></li>
+<li><p>Adding global and variable-specific metadata attributes</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Defining the dimensions </span>
+<span class="n">x</span><span class="o">&lt;-</span><span class="nf">ncdim_def</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span><span class="n">create_dimvar</span><span class="o">=</span><span class="bp">F</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="m">1</span><span class="o">:</span><span class="m">900</span><span class="p">)</span>
+<span class="n">y</span><span class="o">&lt;-</span><span class="nf">ncdim_def</span><span class="p">(</span><span class="s">&quot;y&quot;</span><span class="p">,</span><span class="n">create_dimvar</span><span class="o">=</span><span class="bp">F</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="m">1</span><span class="o">:</span><span class="m">1100</span><span class="p">)</span>
+<span class="n">timedim</span><span class="o">&lt;-</span><span class="nf">ncdim_def</span><span class="p">(</span><span class="s">&quot;time&quot;</span><span class="p">,</span><span class="s">&quot;days since 1900-01-01 00:00:00.0 -0:00&quot;</span><span class="p">,</span><span class="n">time_vector</span><span class="p">)</span>
+
+<span class="n">fillvalue</span><span class="o">&lt;-</span><span class="m">1e32</span>
+<span class="n">dlname</span> <span class="o">&lt;-</span> <span class="s">&quot;precipitation_amount&quot;</span>
+
+<span class="c1"># 2. Defining the variables</span>
+<span class="n">prec_def</span> <span class="o">&lt;-</span> <span class="nf">ncvar_def</span><span class="p">(</span><span class="s">&quot;prec&quot;</span><span class="p">,</span><span class="s">&quot;kg m-2&quot;</span><span class="p">,</span><span class="nf">list</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">timedim</span><span class="p">),</span><span class="n">fillvalue</span><span class="p">,</span><span class="n">dlname</span><span class="p">,</span><span class="n">prec</span><span class="o">=</span><span class="s">&quot;single&quot;</span><span class="p">)</span>
+<span class="n">lon_def</span><span class="o">&lt;-</span><span class="nf">ncvar_def</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;longitude&quot;</span><span class="p">,</span><span class="n">units</span><span class="o">=</span><span class="s">&quot;degrees_east&quot;</span><span class="p">,</span><span class="n">dim</span><span class="o">=</span><span class="nf">list</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">))</span>
+<span class="n">lat_def</span><span class="o">&lt;-</span><span class="nf">ncvar_def</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;latitude&quot;</span><span class="p">,</span><span class="n">units</span><span class="o">=</span><span class="s">&quot;degrees_north&quot;</span><span class="p">,</span><span class="n">dim</span><span class="o">=</span><span class="nf">list</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">))</span>
+
+<span class="c1"># 3. Creating the netCDF-file</span>
+<span class="n">ncfname</span> <span class="o">&lt;-</span> <span class="nf">paste</span><span class="p">(</span><span class="s">&quot;/data/icdc_main/PROJECTS/nfdi4earth/TA1_3/workshop_netcdf/netcdf-workshop-jupyterbook/prec_rw_&quot;</span><span class="p">,</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="s">&quot;.nc&quot;</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+<span class="n">ncout</span> <span class="o">&lt;-</span> <span class="nf">nc_create</span><span class="p">(</span><span class="n">ncfname</span><span class="p">,</span><span class="n">vars</span><span class="o">=</span><span class="nf">list</span><span class="p">(</span><span class="n">prec_def</span><span class="p">,</span><span class="n">lon_def</span><span class="p">,</span><span class="n">lat_def</span><span class="p">),</span><span class="n">force_v4</span><span class="o">=</span><span class="bp">T</span><span class="p">)</span>
+
+<span class="c1"># 4. Inserting the variables</span>
+<span class="nf">ncvar_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="n">lon_def</span><span class="p">,</span><span class="n">lon</span><span class="p">)</span>
+<span class="nf">ncvar_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="n">lat_def</span><span class="p">,</span><span class="n">lat</span><span class="p">)</span>
+<span class="nf">ncvar_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="n">prec_def</span><span class="p">,</span><span class="nf">aperm</span><span class="p">(</span><span class="n">radarmatrix</span><span class="p">,</span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">3</span><span class="p">)))</span>
+
+<span class="c1"># 5. Adding attributes</span>
+<span class="c1">#  5.1. Variable attributes</span>
+<span class="nf">ncatt_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="s">&quot;longitude&quot;</span><span class="p">,</span><span class="s">&quot;axis&quot;</span><span class="p">,</span><span class="s">&quot;X&quot;</span><span class="p">)</span> <span class="c1">#,verbose=FALSE) #,definemode=FALSE)</span>
+<span class="nf">ncatt_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="s">&quot;latitude&quot;</span><span class="p">,</span><span class="s">&quot;axis&quot;</span><span class="p">,</span><span class="s">&quot;Y&quot;</span><span class="p">)</span>
+<span class="nf">ncatt_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="s">&quot;time&quot;</span><span class="p">,</span><span class="s">&quot;axis&quot;</span><span class="p">,</span><span class="s">&quot;T&quot;</span><span class="p">)</span>
+<span class="nf">ncatt_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="n">varid</span><span class="o">=</span><span class="s">&quot;prec&quot;</span><span class="p">,</span><span class="n">attname</span><span class="o">=</span><span class="s">&quot;coordinates&quot;</span><span class="p">,</span><span class="n">attval</span><span class="o">=</span><span class="s">&quot;longitude latitude&quot;</span><span class="p">)</span>
+<span class="nf">ncatt_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="n">varid</span><span class="o">=</span><span class="s">&quot;longitude&quot;</span><span class="p">,</span><span class="n">attname</span><span class="o">=</span><span class="s">&quot;standard_name&quot;</span><span class="p">,</span><span class="n">attval</span><span class="o">=</span><span class="s">&quot;longitude&quot;</span><span class="p">)</span>
+<span class="nf">ncatt_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="n">varid</span><span class="o">=</span><span class="s">&quot;latitude&quot;</span><span class="p">,</span><span class="n">attname</span><span class="o">=</span><span class="s">&quot;standard_name&quot;</span><span class="p">,</span><span class="n">attval</span><span class="o">=</span><span class="s">&quot;latitude&quot;</span><span class="p">)</span>
+<span class="c1">#  5.2. Global attributes</span>
+<span class="nf">ncatt_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="s">&quot;title&quot;</span><span class="p">,</span><span class="s">&quot;Radar-based Precipitation Climatology for Germany&quot;</span><span class="p">)</span>
+<span class="nf">ncatt_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="s">&quot;institution&quot;</span><span class="p">,</span><span class="s">&quot;Deutscher Wetterdienst (DWD)&quot;</span><span class="p">)</span>
+<span class="nf">ncatt_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="s">&quot;source&quot;</span><span class="p">,</span><span class="s">&quot;Radar composit, Gauge-adjusted&quot;</span><span class="p">)</span>
+<span class="nf">ncatt_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="s">&quot;references&quot;</span><span class="p">,</span><span class="s">&quot;http://dx.doi.org/10.5676/DWD/RADKLIM_RW_V2017.002&quot;</span><span class="p">)</span>
+<span class="nf">ncatt_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="s">&quot;history&quot;</span><span class="p">,</span><span class="s">&quot;transformation to netcdf with procedure by Christopher Purr (University of Hamburg) 2023/01/01&quot;</span><span class="p">)</span>
+<span class="nf">ncatt_put</span><span class="p">(</span><span class="n">ncout</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="s">&quot;Conventions&quot;</span><span class="p">,</span><span class="s">&quot;CF-1.8&quot;</span><span class="p">)</span>
+
+<span class="c1"># Close the file and write data to disk</span>
+<span class="nf">nc_close</span><span class="p">(</span><span class="n">ncout</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">image.plot</span><span class="p">(</span><span class="nf">seq</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">900</span><span class="p">),</span><span class="nf">seq</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">1100</span><span class="p">),</span><span class="nf">t</span><span class="p">(</span><span class="n">radarmatrix</span><span class="p">[,,</span><span class="m">20</span><span class="p">]),</span><span class="n">asp</span><span class="o">=</span><span class="m">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/9adcf23753bdc810979edbe52894a89c60b9996a28795315ec2cab1dd3a68544.png" src="_images/9adcf23753bdc810979edbe52894a89c60b9996a28795315ec2cab1dd3a68544.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="checking-if-the-netcdf-file-conforms-to-the-cf-standard">
+<h2>5. Checking if the netcdf-file conforms to the cf-Standard<a class="headerlink" href="#checking-if-the-netcdf-file-conforms-to-the-cf-standard" title="Permalink to this heading">#</a></h2>
+<p>To check whether the netCDF-file we created conforms to the CF-Standard, we use the so-called “CF-Checker”: <a class="github reference external" href="https://github.com/cedadev/cf-checker">cedadev/cf-checker</a></p>
+<p>It can be installed by using the package manager <code class="docutils literal notranslate"><span class="pre">Conda</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">cfchecker</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">cfchecker</span> <span class="c1"># create new env OR</span>
+<span class="n">conda</span> <span class="n">install</span> <span class="n">cfchecker</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span>             <span class="c1"># install on existing env</span>
+</pre></div>
+</div>
+<p>Then, it can be executed the following way:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">system</span><span class="p">(</span><span class="s">&quot;cfchecks prec_rw_0101.nc&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="further-material">
+<h2>Further material<a class="headerlink" href="#further-material" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://unidata.github.io/python-training/workshop/CF%20Conventions/netcdf-and-cf-the-basics/">https://unidata.github.io/python-training/workshop/CF Conventions/netcdf-and-cf-the-basics/</a></p></li>
+<li><p>CF-Conventions - Overview: <a class="reference external" href="https://cfconventions.org/">https://cfconventions.org/</a></p></li>
+<li><p>CF-Conventions - current version: <a class="reference external" href="http://cfconventions.org/cf-conventions/cf-conventions.html">http://cfconventions.org/cf-conventions/cf-conventions.html</a></p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "r"
+        },
+        kernelOptions: {
+            name: "ir",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'ir'</script>
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="xarray_create_netcdf.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Handling netcdf data with Xarray</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="nco.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Manipulating attributes and variable names with NCO</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#learning-objectives">Learning Objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction">Introduction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#packages">Packages</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-the-data">1. Download the data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#untar-the-data">2. Untar the data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#read-the-data">3. Read the data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metadata">3.1. Metadata</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#binary-data">3.2. Binary data</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#process-data">4. Process data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#calculate-the-grid-information">4.1. Calculate the grid information</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#writing-the-netcdf-file">4.2. Writing the netCDF-file</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#checking-if-the-netcdf-file-conforms-to-the-cf-standard">5. Checking if the netcdf-file conforms to the cf-Standard</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-material">Further material</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Christopher Purr, Remon Sadikni (ICDC, NFDI4Earth, Uni Hamburg)
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
