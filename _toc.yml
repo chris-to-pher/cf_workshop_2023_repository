@@ -4,6 +4,7 @@
 format: jb-book
 root: intro
 chapters:
+- file: environment_and_datasets.ipynb
 - file: netcdf_format
 - file: cf-conventions
 - file: xarray_create_netcdf
