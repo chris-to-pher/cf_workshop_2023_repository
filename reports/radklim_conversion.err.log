@@ -17,23 +17,25 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-system("tar -xvf RW2017.002_200101.tar.gz -C data", intern=TRUE)
-{
-    "tags": [
-        "hide-output"
-    ]
-}
+#install.packages("ncdf4")
+#install.packages("chron")
+#install.packages("fields")
+
+library(ncdf4)
+library(chron)
+library(fields)
 ------------------
 
-Error in parse(text = x, srcfile = src): <text>:3:13: Unerwartete(s) '['
-2: {
-3:     "tags": [
-               ^
-Traceback:
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mNameError[0m                                 Traceback (most recent call last)
+Cell [0;32mIn[1], line 5[0m
+[1;32m      1[0m [38;5;66;03m#install.packages("ncdf4")[39;00m
+[1;32m      2[0m [38;5;66;03m#install.packages("chron")[39;00m
+[1;32m      3[0m [38;5;66;03m#install.packages("fields")[39;00m
+[0;32m----> 5[0m [43mlibrary[49m(ncdf4)
+[1;32m      6[0m library(chron)
+[1;32m      7[0m library(fields)
 
-ERROR: Error in parse(text = x, srcfile = src): <text>:3:13: Unerwartete(s) '['
-2: {
-3:     "tags": [
-               ^
-
+[0;31mNameError[0m: name 'library' is not defined
+NameError: name 'library' is not defined
 
