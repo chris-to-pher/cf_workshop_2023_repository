@@ -363,7 +363,10 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">The CF Metadata Conventions</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#what-are-the-cf-conventions">1. What are the CF conventions?</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#what-are-the-cf-conventions">1. What are the CF conventions?</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-benefit-of-metadata">The benefit of metadata</a></li>
+</ul>
+</li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#important-features">2. Important features</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variable-names">Variable Names</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#units">Units</a><ul class="nav section-nav flex-column">
@@ -375,7 +378,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#auxilliary-coordinates">Auxilliary Coordinates</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cells-and-bounds">Cells and Bounds</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#flags">Flags</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#types-of-measurement-or-model-data">3. Types of measurement (or model) data</a><ul class="visible nav section-nav flex-column">
@@ -404,10 +407,24 @@ document.write(`
 <section class="tex2jax_ignore mathjax_ignore" id="what-are-the-cf-conventions">
 <h1>1. What are the CF conventions?<a class="headerlink" href="#what-are-the-cf-conventions" title="Permalink to this heading">#</a></h1>
 <ul class="simple">
-<li><p>community standard for describing data in the earth system sciences</p></li>
-<li><p>general concept Mostly used/intended for netcdf but also possible in other formats like XML</p></li>
+<li><p>rules how to interpret the metadata in climate and weather datasets</p></li>
+<li><p>community standard in the earth system sciences</p></li>
+<li><p>general concept mostly used/intended for netcdf but also possible in other formats like XML</p></li>
+<li><p>gives extra structure to netcdf by decribing what the data means physically, statistically and dimensionally</p></li>
 <li><p>developed at University of Reading</p></li>
 </ul>
+<section id="the-benefit-of-metadata">
+<h2>The benefit of metadata<a class="headerlink" href="#the-benefit-of-metadata" title="Permalink to this heading">#</a></h2>
+<p><img alt="image" src="_images/metadata.png" /></p>
+<ul class="simple">
+<li><p>two types of metadata:</p>
+<ul>
+<li><p>attributes describing all of the data</p></li>
+<li><p>arrays that vary along a dimension (e.g. coordinates)</p></li>
+</ul>
+</li>
+</ul>
+</section>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="important-features">
 <h1>2. Important features<a class="headerlink" href="#important-features" title="Permalink to this heading">#</a></h1>
@@ -458,8 +475,12 @@ document.write(`
 </ul>
 </section>
 </section>
-<section id="cells-and-bounds">
-<h2>Cells and Bounds<a class="headerlink" href="#cells-and-bounds" title="Permalink to this heading">#</a></h2>
+<section id="flags">
+<h2>Flags<a class="headerlink" href="#flags" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>describe the quality of the data</p></li>
+<li><p>can also be in the form of auxilliary variables</p></li>
+</ul>
 </section>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="types-of-measurement-or-model-data">
@@ -558,7 +579,10 @@ document.write(`
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">The CF Metadata Conventions</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#what-are-the-cf-conventions">1. What are the CF conventions?</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#what-are-the-cf-conventions">1. What are the CF conventions?</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-benefit-of-metadata">The benefit of metadata</a></li>
+</ul>
+</li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#important-features">2. Important features</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variable-names">Variable Names</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#units">Units</a><ul class="nav section-nav flex-column">
@@ -570,7 +594,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#auxilliary-coordinates">Auxilliary Coordinates</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cells-and-bounds">Cells and Bounds</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#flags">Flags</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#types-of-measurement-or-model-data">3. Types of measurement (or model) data</a><ul class="visible nav section-nav flex-column">
