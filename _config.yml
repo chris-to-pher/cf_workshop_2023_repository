@@ -2,14 +2,16 @@
 # Learn more at https://jupyterbook.org/customize/config.html
 
 title: How to create publishable netcdf-data
-author: Christopher Purr, Remon Sadikni (ICDC, NFDI4Earth, Uni Hamburg)
+author: Christopher Purr, Remon Sadikni, Stefan Kern (ICDC, NFDI4Earth, Uni Hamburg)
 logo: NFDI4Earth_logo.png
 
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
 execute:
-  execute_notebooks: no
+  execute_notebooks: force
   timeout: 100
+  exclude_patterns:
+    - '*radklim_conversion*'
 # Define the name of the latex output file for PDF builds
 latex:
   latex_documents:

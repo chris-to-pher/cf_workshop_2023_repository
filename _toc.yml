@@ -4,9 +4,9 @@
 format: jb-book
 root: intro
 chapters:
-- file: environment_and_datasets.ipynb
 - file: netcdf_format
 - file: cf-conventions
 - file: xarray_create_netcdf
 - file: radklim_conversion.ipynb
 - file: nco
+- file: environment_and_datasets.ipynb
