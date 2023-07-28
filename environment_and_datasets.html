@@ -362,7 +362,12 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#environment">Environment</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-sets">Data Sets</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-sets">Data Sets</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dwd-stations">DWD stations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#radolan">Radolan</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sea-ice-volume">Sea ice volume</a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -399,23 +404,26 @@ document.write(`
 <li><p><strong>ncdump</strong> can be used without loading modules</p></li>
 </ul>
 </li>
-<li><p>You have 20GB space in your home directory. This should be enough for the test cases. If you need more, get back to us.</p></li>
+<li><p>You have 20GB space in your home directory <strong>/home/zmaw/uXXXXXX/</strong>. This should be enough for the test cases. If you need more, get back to us.</p></li>
 </ul>
 </section>
 <section id="data-sets">
 <h2>Data Sets<a class="headerlink" href="#data-sets" title="Permalink to this heading">#</a></h2>
 <p>You can use the following ASCII or binary data sets to practice the conversion to CF compliant netCDF files:</p>
-<ol class="arabic simple">
-<li><p>DWD stations
-We have atmospheric measurement stations from the German Meteorological Service (DWD) in ASCII:
-/data/icdc/atmosphere/dwd_stations/DATA/</p></li>
-</ol>
-<p>You can either convert single stations to netCDF, but you can also try to save several stations into one netCDF file!</p>
-<ol class="arabic simple" start="2">
-<li><p>Radolan
-You can also convert a binary data sets, the same one you saw in the R part, but now in a higher temporal resolution:
-<a class="reference external" href="https://opendata.dwd.de/climate_environment/CDC/grids_germany/5_minutes/radolan/reproc/2017_002/bin/2023/">https://opendata.dwd.de/climate_environment/CDC/grids_germany/5_minutes/radolan/reproc/2017_002/bin/2023/</a></p></li>
-</ol>
+<section id="dwd-stations">
+<h3>DWD stations<a class="headerlink" href="#dwd-stations" title="Permalink to this heading">#</a></h3>
+<p>We have atmospheric measurement stations from the German Meteorological Service (DWD) in ASCII:
+/data/icdc/atmosphere/dwd_stations/DATA/. You can either convert single stations to netCDF, but you can also try to save several stations into one netCDF file!</p>
+</section>
+<section id="radolan">
+<h3>Radolan<a class="headerlink" href="#radolan" title="Permalink to this heading">#</a></h3>
+<p>You can also convert a binary data sets, the same one you saw in the R part, but now in a higher temporal resolution:
+<a class="reference external" href="https://opendata.dwd.de/climate_environment/CDC/grids_germany/5_minutes/radolan/reproc/2017_002/bin/2023/">https://opendata.dwd.de/climate_environment/CDC/grids_germany/5_minutes/radolan/reproc/2017_002/bin/2023/</a></p>
+</section>
+<section id="sea-ice-volume">
+<h3>Sea ice volume<a class="headerlink" href="#sea-ice-volume" title="Permalink to this heading">#</a></h3>
+<p>You can find the sea ice volume data here /data/icdc_main/DATA/ice_and_snow/esa_cci_sicci/, the file is called ESA-SICCI2_ICDC__SeaIceVolumeTimeseries__south_all_v2.0_fv0.01.txt</p>
+</section>
 </section>
 </section>
 
@@ -478,7 +486,12 @@ You can also convert a binary data sets, the same one you saw in the R part, but
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#environment">Environment</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-sets">Data Sets</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-sets">Data Sets</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dwd-stations">DWD stations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#radolan">Radolan</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sea-ice-volume">Sea ice volume</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
